@@ -33,7 +33,7 @@ fi
 
 # Copy ly systemd override (TTY colors)
 log_info "Configuring ly display manager colors..."
-if command -v ly &> /dev/null; then
+if pacman -Q ly &> /dev/null; then
     sudo mkdir -p /etc/systemd/system/ly.service.d
     sudo cp "$DOTFILES_DIR/static/ly/override.conf" /etc/systemd/system/ly.service.d/override.conf
     sudo systemctl daemon-reload
