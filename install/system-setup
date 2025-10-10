@@ -31,6 +31,45 @@ fi
 
 log_success "gnome-keyring PAM configured"
 
+# Configure pacman.conf
+log_info "Configuring pacman.conf..."
+
+PACMAN_CONF="/etc/pacman.conf"
+sudo cp "$PACMAN_CONF" "${PACMAN_CONF}.backup" 2>/dev/null || true
+
+# Enable Color
+if ! grep -q "^Color" "$PACMAN_CONF"; then
+    sudo sed -i 's/^#Color/Color/' "$PACMAN_CONF"
+    log_detail "Enabled Color"
+fi
+
+# Add ILoveCandy (Pac-Man progress bar)
+if ! grep -q "^ILoveCandy" "$PACMAN_CONF"; then
+    sudo sed -i '/^Color/a ILoveCandy' "$PACMAN_CONF"
+    log_detail "Enabled ILoveCandy (Pac-Man progress bar)"
+fi
+
+# Enable VerbosePkgLists
+if ! grep -q "^VerbosePkgLists" "$PACMAN_CONF"; then
+    sudo sed -i 's/^#VerbosePkgLists/VerbosePkgLists/' "$PACMAN_CONF"
+    log_detail "Enabled VerbosePkgLists"
+fi
+
+# Set ParallelDownloads to 5
+if ! grep -q "^ParallelDownloads = 5" "$PACMAN_CONF"; then
+    sudo sed -i 's/^#ParallelDownloads.*/ParallelDownloads = 5/' "$PACMAN_CONF"
+    sudo sed -i 's/^ParallelDownloads.*/ParallelDownloads = 5/' "$PACMAN_CONF"
+    log_detail "Set ParallelDownloads = 5"
+fi
+
+# Add DownloadUser
+if ! grep -q "^DownloadUser" "$PACMAN_CONF"; then
+    sudo sed -i '/^ParallelDownloads/a DownloadUser = alpm' "$PACMAN_CONF"
+    log_detail "Added DownloadUser = alpm"
+fi
+
+log_success "pacman.conf configured"
+
 # Configure UFW
 log_info "Configuring UFW..."
 sudo ufw default deny incoming
