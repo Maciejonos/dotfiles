@@ -38,9 +38,9 @@ log_header() {
     if _has_gum; then
         echo
         gum style \
-            --foreground 212 \
+            --foreground 108 \
             --border double \
-            --border-foreground 212 \
+            --border-foreground 108 \
             --padding "0 2" \
             --margin "1 0" \
             --width 50 \
@@ -48,9 +48,9 @@ log_header() {
             "$text"
         echo
     else
-        echo -e "\n${_BLUE}════════════════════════════════════════${_NC}"
-        echo -e "${_BLUE}  $text${_NC}"
-        echo -e "${_BLUE}════════════════════════════════════════${_NC}\n"
+        echo -e "\n${_GREEN}════════════════════════════════════════${_NC}"
+        echo -e "${_GREEN}  $text${_NC}"
+        echo -e "${_GREEN}════════════════════════════════════════${_NC}\n"
     fi
 }
 
@@ -61,7 +61,7 @@ log_step() {
     if _has_gum; then
         echo
         gum style \
-            --foreground 212 \
+            --foreground 108 \
             --bold \
             "$_ICON_STEP $text"
     else
@@ -88,7 +88,7 @@ log_success() {
 
     if _has_gum; then
         gum style \
-            --foreground 212 \
+            --foreground 108 \
             "  $_ICON_SUCCESS $text"
     else
         echo -e "  ${_GREEN}$_ICON_SUCCESS${_NC} $text"
@@ -166,7 +166,7 @@ log_progress() {
 
     if _has_gum; then
         gum style \
-            --foreground 212 \
+            --foreground 108 \
             "  [$count] $text"
     else
         echo -e "  ${_CYAN}[$count]${_NC} $text"
