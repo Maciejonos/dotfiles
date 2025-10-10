@@ -1,0 +1,14 @@
+alias c='clear'
+alias pf='fastfetch'
+alias ls='eza -lh --group-directories-first --icons=auto'
+alias ll='eza -al --group-directories-first --icons=always'
+alias lt='eza -a --tree --level=2 --icons=always'
+alias cd="zd"
+alias ff='sudo fd -HI -a --exclude .snapshots'
+alias is='fzf --preview="bat --style=numbers --color=always {}"'
+alias nis='nvim $(fzf --preview="bat --color=always {}")'
+
+# Directories
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'

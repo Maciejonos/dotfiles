@@ -1,0 +1,76 @@
+#!/bin/bash
+
+set -e
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source "$SCRIPT_DIR/lib/helpers.sh"
+
+# Configure gnome-keyring PAM
+log_info "Configuring gnome-keyring PAM integration..."
+
+# Backup PAM files
+sudo cp /etc/pam.d/login /etc/pam.d/login.backup 2>/dev/null || true
+sudo cp /etc/pam.d/passwd /etc/pam.d/passwd.backup 2>/dev/null || true
+
+# Configure /etc/pam.d/login
+if ! grep -q "pam_gnome_keyring.so" /etc/pam.d/login; then
+    sudo sed -i '/auth.*include.*system-local-login/a auth       optional     pam_gnome_keyring.so' /etc/pam.d/login
+    sudo sed -i '/session.*include.*system-local-login/a session    optional     pam_gnome_keyring.so auto_start' /etc/pam.d/login
+    log_detail "Added gnome-keyring to /etc/pam.d/login"
+else
+    log_detail "gnome-keyring already configured in /etc/pam.d/login"
+fi
+
+# Configure /etc/pam.d/passwd
+if ! grep -q "pam_gnome_keyring.so" /etc/pam.d/passwd; then
+    echo "password	optional	pam_gnome_keyring.so" | sudo tee -a /etc/pam.d/passwd > /dev/null
+    log_detail "Added gnome-keyring to /etc/pam.d/passwd"
+else
+    log_detail "gnome-keyring already configured in /etc/pam.d/passwd"
+fi
+
+log_success "gnome-keyring PAM configured"
+
+# Configure UFW
+log_info "Configuring UFW..."
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow 53317/udp comment 'LocalSend'
+sudo ufw allow 53317/tcp comment 'LocalSend'
+sudo ufw allow 22/tcp comment 'SSH'
+sudo ufw --force enable
+sudo systemctl enable ufw
+log_success "UFW configured and enabled"
+
+# Add user to docker group and enable service
+log_info "Configuring Docker..."
+if command -v docker &> /dev/null; then
+    if groups $USER | grep -q '\bdocker\b'; then
+        log_detail "User already in docker group"
+    else
+        sudo usermod -aG docker $USER
+        log_detail "Added $USER to docker group"
+        log_info "Note: Log out and back in for docker group to take effect"
+    fi
+
+    # Enable and start docker service
+    sudo systemctl enable docker.service
+    sudo systemctl start docker.service
+    log_success "Docker service enabled and started"
+else
+    log_detail "Docker not installed, skipping configuration"
+fi
+
+log_info "Setting zsh as default shell..."
+ZSH_PATH=/usr/bin/zsh
+CURRENT_SHELL=$(getent passwd $USER | cut -d: -f7)
+
+if [ "$CURRENT_SHELL" != "$ZSH_PATH" ]; then
+    chsh -s "$ZSH_PATH"
+    log_success "Default shell changed to zsh"
+    log_info "Note: You need to log out and back in for shell change to take effect"
+else
+    log_detail "zsh is already the default shell"
+fi
+
+log_success "System configuration complete!"

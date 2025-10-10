@@ -1,0 +1,15 @@
+name = "setup"
+name_pretty = "Setup"
+global_search = true
+fixed_order = true
+icon = "󰉉"
+
+[[entries]]
+icon = ""
+text = "Postgres"
+actions = { "system" = "walker --theme menus -m menus:postgres --width 295 --minheight 1 --maxheight 600" }
+
+[[entries]]
+icon = ""
+text = "Backups"
+actions = { "system" = "walker --theme menus -m menus:backups --width 295 --minheight 1 --maxheight 600" }

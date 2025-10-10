@@ -1,0 +1,96 @@
+#!/bin/bash
+
+set -e
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source "$SCRIPT_DIR/lib/helpers.sh"
+
+DOTFILES_DIR="$HOME/.config/dotfiles"
+
+# Symlink zshrc
+if [ -f "$DOTFILES_DIR/config/.zshrc" ]; then
+    if [ -e "$HOME/.zshrc" ]; then
+        rm -rf "$HOME/.zshrc"
+    fi
+    ln -snf "$DOTFILES_DIR/config/.zshrc" "$HOME/.zshrc"
+    log_success "Linked .zshrc"
+fi
+
+# Symlink zsh config folder
+if [ -d "$DOTFILES_DIR/config/zshrc" ]; then
+    if [ -e "$HOME/.config/zshrc" ]; then
+        rm -rf "$HOME/.config/zshrc"
+    fi
+    ln -snf "$DOTFILES_DIR/config/zshrc" "$HOME/.config/zshrc"
+    log_success "Linked zshrc folder"
+fi
+
+# Symlink applications folder
+if [ -e "$HOME/.local/share/applications" ]; then
+    rm -rf "$HOME/.local/share/applications"
+fi
+mkdir -p "$HOME/.local/share"
+ln -snf "$DOTFILES_DIR/applications" "$HOME/.local/share/applications"
+log_success "Linked applications"
+
+# Symlink bin folder
+if [ -e "$HOME/.local/bin" ]; then
+    rm -rf "$HOME/.local/bin"
+fi
+
+mkdir -p "$HOME/.local"
+
+ln -snf "$DOTFILES_DIR/bin" "$HOME/.local/bin"
+
+log_success "Linked bin"
+
+# Symlink UWSM config
+log_info "Configuring UWSM environment..."
+
+mkdir -p "$HOME/.config/uwsm"
+
+# Detect NVIDIA GPU
+if lspci | grep -i nvidia &> /dev/null; then
+    log_detail "NVIDIA GPU detected, using NVIDIA config"
+    ln -snf "$DOTFILES_DIR/config/uwsm/env-nvidia" "$HOME/.config/uwsm/env"
+else
+    log_detail "No NVIDIA GPU detected, using standard config"
+    ln -snf "$DOTFILES_DIR/config/uwsm/env" "$HOME/.config/uwsm/env"
+fi
+
+log_success "Linked UWSM config"
+
+# Symlink all config folders
+log_info "Linking config folders..."
+
+for item in "$DOTFILES_DIR/config"/*; do
+    name=$(basename "$item")
+
+    [ "$name" = "uwsm" ] && continue
+
+    target="$HOME/.config/$name"
+    if [ -e "$target" ]; then
+        rm -rf "$target"
+    fi
+    ln -snf "$item" "$target"
+    log_detail "$name"
+done
+
+# Set initial theme
+log_info "Setting up initial theme (everforest)..."
+
+mkdir -p "$HOME/.config/nvim/lua/plugins"
+mkdir -p "$HOME/.config/btop/themes"
+mkdir -p "$HOME/.config/mako"
+mkdir -p "$HOME/.config/eza"
+mkdir -p "$DOTFILES_DIR/current"
+
+ln -snf "$DOTFILES_DIR/themes/everforest" "$DOTFILES_DIR/current/theme"
+ln -snf "$DOTFILES_DIR/current/theme/backgrounds/1-everforest.jpg" "$DOTFILES_DIR/current/background"
+ln -snf "$DOTFILES_DIR/current/theme/neovim.lua" "$HOME/.config/nvim/lua/plugins/theme.lua"
+ln -snf "$DOTFILES_DIR/current/theme/btop.theme" "$HOME/.config/btop/themes/current.theme"
+ln -snf "$DOTFILES_DIR/current/theme/mako.ini" "$HOME/.config/mako/config"
+ln -snf "$DOTFILES_DIR/current/theme/eza.yml" "$HOME/.config/eza/theme.yml"
+
+log_success "Initial theme set (everforest)"
+log_success "All symlinks created!"

@@ -1,0 +1,120 @@
+# Security & Authentication
+1password
+gnome-keyring
+polkit-gnome
+
+# Browsers
+chromium
+zen-browser-bin
+
+# Development
+git
+lazygit
+lazydocker
+docker
+docker-compose
+neovim
+visual-studio-code-bin
+
+# Terminal & Shell
+ghostty
+zsh
+starship
+eza
+bat
+btop
+fastfetch
+fd
+fzf
+ripgrep
+tree
+zoxide
+figlet
+pv
+
+# Hyprland Ecosystem
+hyprpaper
+hyprpicker
+hypridle
+hyprlock
+xdg-desktop-portal-hyprland
+hyprsunset
+hyprcursor
+
+# Wayland Tools & UI
+waybar
+mako
+walker
+swayosd
+swaybg
+waypaper
+grim
+slurp
+satty
+zenity
+uwsm
+
+# Audio
+pamixer
+wiremix
+
+# Bluetooth & Network
+bluetui
+openssh
+ufw
+
+# File Management
+nautilus
+nautilus-open-any-terminal
+gnome-disk-utility
+rsync
+gvfs-dnssd
+unzip
+
+# System Utilities
+flatpak
+plocate
+pacman-contrib
+
+# Fonts & icons
+ttf-cascadia-mono-nerd
+ttf-dejavu
+noto-fonts
+noto-fonts-emoji
+otf-font-awesome
+yaru-icon-theme
+
+# Themes & Icons
+bibata-cursor-theme
+kora-icon-theme
+gnome-themes-extra
+
+# Applications
+anytype-bin
+localsend-bin
+handbrake
+video-trimmer
+mpv
+
+# Elephant Suite
+elephant-archlinuxpkgs
+elephant-calc
+elephant-clipboard
+elephant-files
+elephant-menus
+elephant-todo
+
+# Image Processing
+imagemagick
+
+# Qt/Wayland Support
+qt5-wayland
+qt6-wayland
+
+# Desktop Portals
+xdg-desktop-portal-gtk
+xdg-utils
+
+# Utilities
+wget
+jq

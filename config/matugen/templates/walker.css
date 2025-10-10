@@ -1,0 +1,6 @@
+@define-color selected-text #{{colors.on_surface.default.hex_stripped}};
+@define-color text #{{colors.on_surface.default.hex_stripped}};
+@define-color base #{{colors.background.default.hex_stripped}};
+@define-color border #{{colors.on_surface.default.hex_stripped}};
+@define-color foreground #{{colors.on_surface.default.hex_stripped}};
+@define-color background #{{colors.background.default.hex_stripped}};

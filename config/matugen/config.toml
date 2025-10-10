@@ -1,0 +1,40 @@
+[config]
+
+[templates.btop]
+input_path = "~/.config/matugen/templates/btop.theme.tmpl"
+output_path = '~/.config/dotfiles/themes/matugen/btop.theme'
+
+[templates.ghostty]
+input_path = '~/.config/matugen/templates/ghostty.conf'
+output_path = '~/.config/dotfiles/themes/matugen/ghostty.conf'
+
+[templates.hyprland]
+input_path = '~/.config/matugen/templates/hyprland.conf'
+output_path = '~/.config/dotfiles/themes/matugen/hyprland.conf'
+
+[templates.hyprlock]
+input_path = '~/.config/matugen/templates/hyprlock.conf'
+output_path = '~/.config/dotfiles/themes/matugen/hyprlock.conf'
+
+[templates.mako]
+input_path  = "~/.config/matugen/templates/mako.conf.tmpl"
+output_path = "~/.config/dotfiles/themes/matugen/mako.ini"
+
+[templates.swayosd]
+input_path  = "~/.config/matugen/templates/swayosd.css.tmpl"
+output_path = "~/.config/dotfiles/themes/matugen/swayosd.css"
+
+[templates.waybar]
+input_path = '~/.config/matugen/templates/waybar.css'
+output_path = '~/.config/dotfiles/themes/matugen/waybar.css'
+
+[templates.gtk]
+input_path = '~/.config/matugen/templates/gtk.css'
+output_path = '~/.config/dotfiles/themes/matugen/gtk.css'
+
+[templates.walker]
+input_path = '~/.config/matugen/templates/walker.css'
+output_path = '~/.config/dotfiles/themes/matugen/walker.css'
+
+
+

@@ -1,0 +1,15 @@
+name = "capture"
+name_pretty = "Capture"
+global_search = true
+fixed_order = true
+icon = ""
+
+[[entries]]
+icon = ""
+text = "Screenshot"
+actions = { "screenshot" = "walker --theme menus -m menus:screenshots --width 295 --minheight 1 --maxheight 600" }
+
+[[entries]]
+icon = ""
+text = "Record"
+actions = { "record" = "io.github.seadve.Kooha" }

@@ -1,0 +1,50 @@
+name = "menu"
+name_pretty = "Menu"
+global_search = true
+fixed_order = true
+icon = ""
+
+[[entries]]
+icon = ""
+text = "Update"
+actions = { "update" = "ghostty --class=local.floating -e installupdates" }
+
+[[entries]]
+icon = "󰣇"
+text = "Install package"
+actions = { "pkg-install" = "ghostty --class=local.floating -e pkg-install" }
+
+[[entries]]
+icon = ""
+text = "Install AUR package"
+actions = { "pkg-install-aur" = "ghostty --class=local.floating -e pkg-install-aur" }
+
+[[entries]]
+icon = ""
+text = "Remove package"
+actions = { "pkg-remove" = "ghostty --class=local.floating -e pkg-remove" }
+
+[[entries]]
+icon = "󰸌"
+text = "Change theme"
+actions = { "change-theme" = "theme-select" }
+
+[[entries]]
+icon = ""
+text = "Capture"
+actions = { "capture" = "walker --theme menus -m menus:capture --width 295 --minheight 1 --maxheight 600" }
+
+[[entries]]
+icon = "󰉉"
+text = "Setup"
+actions = { "setup" = "walker --theme menus -m menus:setup --width 295 --minheight 1 --maxheight 600" }
+
+[[entries]]
+icon = ""
+text = "Keybindings"
+actions = { "keybindings" = "menu-keybindings" }
+
+[[entries]]
+icon = "󰐥"
+text = "System"
+actions = { "system" = "walker --theme menus -m menus:system --width 295 --minheight 1 --maxheight 600" }

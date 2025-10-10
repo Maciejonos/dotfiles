@@ -1,0 +1,91 @@
+#!/bin/bash
+
+# Check if command exists
+_checkCommandExists() {
+  cmd="$1"
+  if ! command -v "$cmd" >/dev/null; then
+    echo 1
+    return
+  fi
+  echo 0
+  return
+}
+
+# ------------------------------------------------------
+# Confirm Start
+# ------------------------------------------------------
+clear
+figlet "Updates"
+echo
+if gum confirm "Update now?"; then
+  echo
+  echo ":: Update started..."
+elif [ $? -eq 130 ]; then
+  exit 130
+else
+  echo
+  echo ":: Update canceled."
+  exit
+fi
+
+# ------------------------------------------------------
+# Check for dotfiles updates
+# ------------------------------------------------------
+echo ":: Checking for dotfiles updates..."
+if command -v updatedotfiles &>/dev/null; then
+  updatedotfiles
+else
+  echo ":: updatedotfiles command not found, skipping"
+fi
+echo
+
+# -----------------------------------------------------
+# Install update
+# -----------------------------------------------------
+if [[ $(_checkCommandExists "pacman") == 0 ]]; then
+  paru
+else
+  echo ":: ERROR - Platform not supported"
+  echo "Press [ENTER] to close."
+  read
+  exit 1
+fi
+echo
+
+# Flatpak
+echo ":: Searching for Flatpak updates..."
+flatpak update
+echo
+
+# ------------------------------------------------------
+# Remove orphan packages
+# ------------------------------------------------------
+orphans=$(pacman -Qtdq)
+if [[ -n $orphans ]]; then
+  echo -e "\e[32m:: Removing orphan system packages\e[0m"
+  for pkg in $orphans; do
+    sudo pacman -Rs --noconfirm "$pkg" || true
+  done
+  echo ":: Orphan packages removed."
+else
+  echo ":: No orphan packages found."
+fi
+echo
+
+# Reload Waybar
+pkill -RTMIN+1 waybar
+echo
+
+# ------------------------------------------------------
+# Check for kernel update and reboot requirement
+# ------------------------------------------------------
+if [ "$(uname -r | sed 's/-arch/\.arch/')" != "$(pacman -Q linux | awk '{print $2}')" ]; then
+  echo ":: Linux kernel has been updated."
+  if gum confirm "Reboot now?"; then
+    sudo reboot now
+  fi
+fi
+
+# Finishing
+echo ":: Update complete!"
+read

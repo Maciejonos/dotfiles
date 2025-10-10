@@ -1,0 +1,35 @@
+name = "screenshots"
+name_pretty = "Screenshots"
+global_search = true
+fixed_order = true
+icon = ""
+
+[[entries]]
+text = "Area → Clipboard"
+icon = ""
+actions = { "area_clipboard" = "hyprshot -m region --clipboard-only && notify-send 'Copied Area'" }
+
+[[entries]]
+text = "Area → File"
+icon = ""
+actions = { "area_file" = "hyprshot -m region" }
+
+[[entries]]
+text = "Window → Clipboard"
+icon = ""
+actions = { "window_clipboard" = "hyprshot -m window --clipboard-only && notify-send 'Copied Window'" }
+
+[[entries]]
+text = "Window → File"
+icon = ""
+actions = { "window_file" = "hyprshot -m window" }
+
+[[entries]]
+text = "Fullscreen → Clipboard"
+icon = ""
+actions = { "fullscreen_clipboard" = "hyprshot -m output --clipboard-only && notify-send 'Copied Fullscreen'" }
+
+[[entries]]
+text = "Fullscreen → File"
+icon = ""
+actions = { "fullscreen_file" = "hyprshot -m output" }

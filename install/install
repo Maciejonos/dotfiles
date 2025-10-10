@@ -1,0 +1,144 @@
+#!/bin/bash
+
+set -e
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+# Source helpers (will work even if gum not installed yet)
+source "$SCRIPT_DIR/lib/helpers.sh"
+
+# Ensure gum is installed first for better UI
+ensure_gum
+
+_isInstalled() {
+    package="$1"
+    check="$(sudo pacman -Qs --color always "${package}" | grep "local" | grep "${package} ")"
+    if [ -n "${check}" ]; then
+        echo 0
+        return
+    fi
+    echo 1
+    return
+}
+
+_installParu() {
+    if [[ ! $(_isInstalled "base-devel") == 0 ]]; then
+        spinner "Installing base-devel..." sudo pacman --noconfirm -S base-devel
+    fi
+    if [[ ! $(_isInstalled "git") == 0 ]]; then
+        spinner "Installing git..." sudo pacman --noconfirm -S git
+    fi
+
+    log_info "Cloning paru from AUR..."
+    git clone https://aur.archlinux.org/paru.git /tmp/paru
+    cd /tmp/paru
+    spinner "Building paru..." makepkg -si --noconfirm
+    cd ~
+    rm -rf /tmp/paru
+    log_success "Paru installed successfully"
+}
+
+_installPackages() {
+    local total=$(grep -v '^#' "$1" | grep -v '^$' | wc -l)
+    local current=0
+
+    while IFS= read -r pkg || [ -n "$pkg" ]; do
+        [[ -z "$pkg" || "$pkg" =~ ^# ]] && continue
+
+        current=$((current + 1))
+
+        if [[ $(_isInstalled "${pkg}") == 0 ]]; then
+            log_progress "$pkg (already installed)" "$current/$total"
+            continue
+        fi
+
+        spinner "Installing $pkg... [$current/$total]" paru --noconfirm -S "${pkg}"
+        log_success "$pkg"
+    done < "$1"
+}
+
+clear
+log_header "Dotfiles Installation"
+
+START_TIME=$(date +%s)
+
+if [[ ! $(_isInstalled "paru") == 0 ]]; then
+    log_step "Installing paru AUR helper"
+    _installParu
+fi
+
+log_step "Installing packages"
+_installPackages "$SCRIPT_DIR/pkgs.txt"
+
+log_step "Installing Flatpak applications"
+bash "$SCRIPT_DIR/flatpak-apps"
+
+BRIGHTNESS_MODE=""
+if ask_yes_no "Install ddcutil? (monitor brightness control)"; then
+    spinner "Installing ddcutil..." paru --noconfirm -S ddcutil
+    log_success "ddcutil installed"
+    BRIGHTNESS_MODE="desktop"
+fi
+
+if ask_yes_no "Install brightnessctl? (laptop brightness control)"; then
+    spinner "Installing brightnessctl..." paru --noconfirm -S brightnessctl
+    log_success "brightnessctl installed"
+    BRIGHTNESS_MODE="laptop"
+fi
+
+log_step "Installing zsh plugins"
+bash "$SCRIPT_DIR/zsh-plugins"
+
+log_step "Creating symlinks"
+bash "$SCRIPT_DIR/symlinks"
+
+# Copy keybindings after symlinks are created
+if [ "$BRIGHTNESS_MODE" = "laptop" ]; then
+    if [ -f "$SCRIPT_DIR/../static/hypr/conf/keybindings-laptop.conf" ]; then
+        cp "$SCRIPT_DIR/../static/hypr/conf/keybindings-laptop.conf" "$HOME/.config/hypr/conf/keybindings.conf"
+        log_success "Copied laptop keybindings"
+    fi
+elif [ "$BRIGHTNESS_MODE" = "desktop" ]; then
+    if [ -f "$SCRIPT_DIR/../static/hypr/conf/keybindings.conf" ]; then
+        cp "$SCRIPT_DIR/../static/hypr/conf/keybindings.conf" "$HOME/.config/hypr/conf/keybindings.conf"
+        log_success "Copied desktop keybindings"
+    fi
+fi
+
+log_step "Configuring system"
+bash "$SCRIPT_DIR/system-setup"
+
+log_step "Copying static files"
+bash "$SCRIPT_DIR/static-files"
+
+log_step "Setting GTK font"
+gsettings set org.gnome.desktop.interface font-name 'CaskaydiaMono Nerd Font Mono 11'
+gsettings set org.gnome.desktop.interface monospace-font-name 'CaskaydiaMono Nerd Font Mono 11'
+log_success "GTK font configured"
+
+# Detect and configure NVIDIA if present
+log_step "Checking for NVIDIA GPU"
+if lspci | grep -i nvidia &> /dev/null; then
+    log_info "NVIDIA GPU detected, configuring for Hyprland..."
+    bash "$SCRIPT_DIR/nvidia-setup"
+else
+    log_info "No NVIDIA GPU detected, skipping NVIDIA setup"
+fi
+
+END_TIME=$(date +%s)
+TOTAL_TIME=$((END_TIME - START_TIME))
+MINUTES=$((TOTAL_TIME / 60))
+SECONDS=$((TOTAL_TIME % 60))
+
+clear
+log_header "Installation Complete!"
+echo
+log_success "Installed in ${MINUTES}m ${SECONDS}s"
+echo
+log_info "Please log out and back in for all changes to take effect"
+echo
+
+if ask_yes_no "Reboot now?"; then
+    clear
+    systemctl reboot --no-wall 2>/dev/null || reboot 2>/dev/null
+fi

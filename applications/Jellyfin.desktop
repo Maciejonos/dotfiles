@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Jellyfin
+Comment=Jellyfin
+Exec=~/.local/bin/launch-webapp https://jellyfin.mcfreaky15.com/web/#/home.html
+Terminal=false
+Type=Application
+Icon=/home/maciej/.local/share/applications/icons/Jellyfin.png
+StartupNotify=true

@@ -1,0 +1,108 @@
+#!/bin/bash
+set -e
+
+# Configuration
+restore_dir="$HOME"
+
+# Dependency checks
+if ! command -v fzf &>/dev/null; then
+  echo "Error: fzf is not installed. Please install it to continue."
+  exit 1
+fi
+
+# Main logic
+echo "Searching for archive files in home directory..."
+
+# Find all archive files in home directory
+archives=$(find "$HOME" -type f -mindepth 1 -maxdepth 5 \
+  \( -name "*.tar.gz" -o -name "*.tgz" -o \
+     -name "*.tar.bz2" -o -name "*.tbz" -o -name "*.tbz2" -o \
+     -name "*.tar.xz" -o -name "*.txz" -o \
+     -name "*.zip" -o -name "*.tar" -o -name "*.7z" -o -name "*.rar" \) \
+  -not -path "$HOME/.cache/*" \
+  -not -path "$HOME/.local/share/Trash/*" \
+  -not -path "$HOME/.minecraft/*" \
+  2>/dev/null | sed "s|$HOME|~|" | sort)
+
+if [ -z "$archives" ]; then
+  echo "No archive files found in home directory"
+  exit 1
+fi
+
+# Center the header text
+header_text="tab: multi-select, enter: restore, ctrl-c: cancel"
+term_width=$(tput cols)
+padding=$(( (term_width - ${#header_text}) / 2 ))
+centered_header=$(printf "%${padding}s%s" "" "$header_text")
+
+fzf_args=(
+  --multi
+  --header="$centered_header"
+  --prompt="Select archives to restore > "
+  --color 'pointer:green,marker:green'
+)
+
+selected_archives=$(echo "$archives" | fzf "${fzf_args[@]}")
+
+if [ -z "$selected_archives" ]; then
+  echo "No archives selected. Exiting."
+  exit 0
+fi
+
+echo "Restoring archives..."
+
+# Ask for restore location
+read -p "Restore to (default: $restore_dir): " custom_restore_dir
+restore_dir="${custom_restore_dir:-$restore_dir}"
+
+if [ ! -d "$restore_dir" ]; then
+  echo "Error: Directory $restore_dir does not exist"
+  exit 1
+fi
+
+echo "$selected_archives" | while read -r archive_display; do
+  # Convert ~/ back to full path
+  archive=$(echo "$archive_display" | sed "s|^~|$HOME|")
+  
+  if [ ! -e "$archive" ]; then
+    echo "Warning: '$archive_display' does not exist, skipping..."
+    continue
+  fi
+  
+  filename=$(basename "$archive")
+  echo "Restoring: $archive_display"
+  
+  # Determine decompression command based on file extension
+  case "$archive" in
+    *.tar.gz|*.tgz)
+      tar -xzf "$archive" -C "$restore_dir"
+      ;;
+    *.tar.bz2|*.tbz|*.tbz2)
+      tar -xjf "$archive" -C "$restore_dir"
+      ;;
+    *.tar.xz|*.txz)
+      tar -xJf "$archive" -C "$restore_dir"
+      ;;
+    *.tar)
+      tar -xf "$archive" -C "$restore_dir"
+      ;;
+    *.zip)
+      unzip -q "$archive" -d "$restore_dir"
+      ;;
+    *.7z)
+      7z x "$archive" -o"$restore_dir"
+      ;;
+    *.rar)
+      unrar x "$archive" "$restore_dir"
+      ;;
+    *)
+      echo "  -> Unknown archive type, skipping"
+      continue
+      ;;
+  esac
+  
+  echo "$filename restored to $restore_dir"
+  echo ""
+done
+
+echo "All restores completed successfully!"

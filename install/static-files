@@ -1,0 +1,46 @@
+#!/bin/bash
+set -e
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source "$SCRIPT_DIR/lib/helpers.sh"
+
+DOTFILES_DIR="$HOME/.config/dotfiles"
+
+# Create directories
+mkdir -p "$HOME/.config/hypr/conf"
+
+# Copy monitors.conf
+if [ -f "$DOTFILES_DIR/static/hypr/conf/monitors.conf" ]; then
+  if [ ! -f "$HOME/.config/hypr/conf/monitors.conf" ]; then
+    cp "$DOTFILES_DIR/static/hypr/conf/monitors.conf" "$HOME/.config/hypr/conf/monitors.conf"
+    log_success "Copied monitors.conf"
+  else
+    log_detail "monitors.conf already exists, skipping"
+  fi
+fi
+
+# Copy env.conf based on NVIDIA detection
+log_info "Detecting GPU configuration..."
+if lspci | grep -i nvidia &>/dev/null; then
+  log_detail "NVIDIA GPU detected, using NVIDIA env config"
+  cp "$DOTFILES_DIR/static/hypr/conf/env-nvidia.conf" "$HOME/.config/hypr/conf/environments.conf"
+  log_success "Copied env.conf (NVIDIA)"
+else
+  log_detail "No NVIDIA GPU detected, using standard env config"
+  cp "$DOTFILES_DIR/static/hypr/conf/env.conf" "$HOME/.config/hypr/conf/environments.conf"
+  log_success "Copied env.conf"
+fi
+
+# Copy ly systemd override (TTY colors)
+log_info "Configuring ly display manager colors..."
+if command -v ly &> /dev/null; then
+    sudo mkdir -p /etc/systemd/system/ly.service.d
+    sudo cp "$DOTFILES_DIR/static/ly/override.conf" /etc/systemd/system/ly.service.d/override.conf
+    sudo systemctl daemon-reload
+    log_success "Copied ly color override"
+else
+    log_detail "ly not installed, skipping ly configuration"
+fi
+
+log_success "Static files copied successfully!"
+

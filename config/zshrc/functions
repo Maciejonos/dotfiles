@@ -1,0 +1,49 @@
+zi() {
+  cd "$(zoxide query -i)"
+}
+
+zd() {
+  if [ $# -eq 0 ]; then
+    builtin cd ~ && return
+  elif [ -d "$1" ]; then
+    builtin cd "$1"
+  else
+    z "$@" && printf "\U000F17A9 " && pwd
+  fi
+}
+
+open() {
+  xdg-open "$@" >/dev/null 2>&1 &
+}
+
+compress() { tar -czf "${1%/}.tar.gz" "${1%/}"; }
+alias decompress="tar -xzf"
+
+iso2sd() {
+  if [ $# -ne 2 ]; then
+    echo "Usage: iso2sd <input_file> <output_device>"
+    echo "Example: iso2sd ~/Downloads/ubuntu-25.04-desktop-amd64.iso /dev/sda"
+    echo -e "\nAvailable SD cards:"
+    lsblk -d -o NAME | grep -E '^sd[a-z]' | awk '{print "/dev/"$1}'
+  else
+    sudo dd bs=4M status=progress oflag=sync if="$1" of="$2"
+    sudo eject $2
+  fi
+}
+
+cp2c() {
+  if [[ -z "$1" ]]; then
+    echo "Usage: cp2c <file>" >&2
+    return 1
+  fi
+
+  wl-copy < "$1"
+}
+
+c2f() {
+  if [[ -z "$1" ]]; then
+    echo "Usage: create-from-clip <filename>" >&2
+    return 1
+  fi
+  wl-paste > "$1"
+}

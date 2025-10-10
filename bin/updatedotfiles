@@ -1,0 +1,150 @@
+#!/bin/bash
+
+DOTFILES_DIR="$HOME/.config/dotfiles"
+
+# Check if gum is available for nice prompts
+if command -v gum &> /dev/null; then
+    USE_GUM=true
+else
+    USE_GUM=false
+fi
+
+# Helper function for prompts
+confirm() {
+    if [ "$USE_GUM" = true ]; then
+        gum confirm "$1"
+    else
+        read -p "$1 (y/n): " -n 1 -r
+        echo
+        [[ $REPLY =~ ^[Yy]$ ]]
+    fi
+}
+
+# Check if dotfiles directory exists
+if [ ! -d "$DOTFILES_DIR" ]; then
+    echo "Error: Dotfiles directory not found at $DOTFILES_DIR"
+    exit 1
+fi
+
+# Check if it's a git repository
+if [ ! -d "$DOTFILES_DIR/.git" ]; then
+    echo "Error: Dotfiles directory is not a git repository"
+    exit 1
+fi
+
+clear
+if command -v figlet &> /dev/null; then
+    figlet "Dotfiles Update"
+else
+    echo "=============================="
+    echo "    DOTFILES UPDATE"
+    echo "=============================="
+fi
+echo
+
+# Get remote info
+echo ":: Fetching remote updates..."
+git -C "$DOTFILES_DIR" fetch origin &> /dev/null
+
+# Get current commit
+current_commit=$(git -C "$DOTFILES_DIR" rev-parse HEAD)
+
+# Get the upstream tracking branch
+upstream=$(git -C "$DOTFILES_DIR" rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null)
+
+if [[ -z "$upstream" ]]; then
+    # Fallback to origin/main or origin/master if no tracking branch set
+    remote_commit=$(git -C "$DOTFILES_DIR" rev-parse origin/main 2>/dev/null || git -C "$DOTFILES_DIR" rev-parse origin/master 2>/dev/null)
+    upstream="origin/main"
+else
+    remote_commit=$(git -C "$DOTFILES_DIR" rev-parse "$upstream")
+fi
+
+if [[ -z "$remote_commit" ]]; then
+    echo "Error: Could not retrieve remote commit."
+    exit 1
+fi
+
+# Check for local changes
+if ! git -C "$DOTFILES_DIR" diff-index --quiet HEAD --; then
+    echo "Warning: You have uncommitted local changes in dotfiles"
+    echo
+    if confirm "Show changes?"; then
+        git -C "$DOTFILES_DIR" status --short
+        echo
+    fi
+    
+    if confirm "Stash changes and update?"; then
+        git -C "$DOTFILES_DIR" stash push -m "Auto-stash before update $(date)"
+        echo ":: Changes stashed"
+    else
+        echo ":: Update canceled. Commit or stash your changes first."
+        exit 1
+    fi
+fi
+
+# Compare commits
+if [[ "$current_commit" == "$remote_commit" ]]; then
+    echo ":: Dotfiles are up to date"
+    
+    # Show current commit info
+    echo
+    echo "Current commit:"
+    git -C "$DOTFILES_DIR" log -1 --oneline
+    exit 0
+else
+    echo ":: Dotfiles update available"
+    echo
+    echo "Current: $(git -C "$DOTFILES_DIR" log -1 --oneline)"
+    echo "Latest:  $(git -C "$DOTFILES_DIR" log "$upstream" -1 --oneline)"
+    echo
+
+    if confirm "Show changelog?"; then
+        echo
+        git -C "$DOTFILES_DIR" log --oneline HEAD.."$upstream"
+        echo
+    fi
+
+    if confirm "Update dotfiles now?"; then
+        echo
+        echo ":: Pulling latest changes..."
+
+        # Pull updates (use current branch, git will pull from upstream automatically)
+        if git -C "$DOTFILES_DIR" pull; then
+            echo ":: Dotfiles updated successfully"
+            echo
+            
+            if confirm "Re-run installation scripts to apply changes?"; then
+                echo
+                echo ":: Re-running installation..."
+                
+                # Re-run symlinks
+                if [ -f "$DOTFILES_DIR/install/symlinks" ]; then
+                    bash "$DOTFILES_DIR/install/symlinks"
+                fi
+                
+                # Re-run static files
+                if [ -f "$DOTFILES_DIR/install/static-files" ]; then
+                    bash "$DOTFILES_DIR/install/static-files"
+                fi
+                
+                echo
+                echo ":: Installation complete"
+                
+                if confirm "Reload Hyprland config?"; then
+                    hyprctl reload
+                    echo ":: Hyprland config reloaded"
+                fi
+            fi
+        else
+            echo "Error: Failed to pull updates"
+            exit 1
+        fi
+    else
+        echo ":: Update canceled"
+        exit 1
+    fi
+fi
+
+echo
+echo ":: Done"

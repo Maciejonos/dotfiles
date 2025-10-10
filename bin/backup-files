@@ -1,0 +1,163 @@
+#!/bin/bash
+set -e
+
+# Configuration
+backup_dir="$HOME/backups"
+timestamp=$(date +%Y%m%d_%H%M%S)
+current_dir="$HOME"
+selected_for_backup=()
+
+# Dependency checks
+if ! command -v fzf &>/dev/null; then
+  echo "Error: fzf is not installed. Please install it to continue."
+  exit 1
+fi
+
+if ! command -v pv &>/dev/null; then
+  echo "Error: pv is not installed. Please install it for progress bars."
+  exit 1
+fi
+
+# Main logic
+mkdir -p "$backup_dir"
+
+# Function to browse directories
+while true; do
+  # Find items at current depth
+  items=$(find "$current_dir" -mindepth 1 -maxdepth 1 \
+    ! -path "$backup_dir" \
+    ! -path "$HOME/.cache" \
+    ! -path "$HOME/.claude" \
+    ! -path "$HOME/.java" \
+    ! -path "$HOME/.chromium" \
+    ! -path "$HOME/.npm" \
+    ! -path "$HOME/.oh-my-zsh" \
+    ! -path "$HOME/.var" \
+    ! -path "$HOME/.zsh_history" \
+    ! -path "$HOME/.cargo" \
+    2>/dev/null | sort)
+  
+  # Add parent directory option if not at HOME
+  if [ "$current_dir" != "$HOME" ]; then
+    items="[..]
+$items"
+  fi
+  
+  # Show current selection count
+  selection_info=""
+  if [ ${#selected_for_backup[@]} -gt 0 ]; then
+    selection_info=" (${#selected_for_backup[@]} selected)"
+  fi
+  
+  # Center the header text
+  header_text="enter: navigate, tab: select, ctrl-d: done, ctrl-c: cancel${selection_info}"
+  term_width=$(tput cols)
+  padding=$(( (term_width - ${#header_text}) / 2 ))
+  centered_header=$(printf "%${padding}s%s" "" "$header_text")
+  
+  fzf_args=(
+    --multi
+    --header="$centered_header"
+    --expect=ctrl-d
+    --prompt="[$current_dir] > "
+    --color 'pointer:green,marker:green'
+  )
+  
+  result=$(echo "$items" | fzf "${fzf_args[@]}")
+  exit_code=$?
+  
+  # Ctrl-C or Esc pressed
+  if [ $exit_code -eq 130 ]; then
+    break
+  fi
+  
+  # Parse result
+  key=$(echo "$result" | head -1)
+  selection=$(echo "$result" | tail -n +2)
+  
+  if [ -z "$selection" ]; then
+    continue
+  fi
+  
+  # Ctrl-D pressed - done selecting
+  if [ "$key" = "ctrl-d" ]; then
+    while IFS= read -r item; do
+      if [ "$item" != "[..]" ] && [ -n "$item" ]; then
+        selected_for_backup+=("$item")
+      fi
+    done <<< "$selection"
+    break
+  fi
+  
+  # Enter pressed - navigate or add to selection
+  item_count=$(echo "$selection" | wc -l)
+  
+  if [ $item_count -gt 1 ]; then
+    # Multiple items selected with Tab - add all to backup list
+    while IFS= read -r item; do
+      if [ "$item" != "[..]" ] && [ -n "$item" ]; then
+        selected_for_backup+=("$item")
+      fi
+    done <<< "$selection"
+    echo "Added $item_count items to backup list"
+    sleep 0.5
+  else
+    # Single item
+    if [ "$selection" = "[..]" ]; then
+      current_dir=$(dirname "$current_dir")
+    elif [ -d "$selection" ]; then
+      current_dir="$selection"
+    else
+      # It's a file, add to backup
+      selected_for_backup+=("$selection")
+      echo "Added to backup list: $(basename "$selection")"
+      sleep 0.5
+    fi
+  fi
+done
+
+# Check if anything was selected
+if [ ${#selected_for_backup[@]} -eq 0 ]; then
+  echo "No items selected. Exiting."
+  exit 0
+fi
+
+echo "Starting backup of ${#selected_for_backup[@]} items..."
+
+for full_path in "${selected_for_backup[@]}"; do
+  if [ ! -e "$full_path" ]; then
+    echo "Warning: '$full_path' does not exist, skipping..."
+    continue
+  fi
+  
+  base_name=$(basename "$full_path")
+  display_path=$(echo "$full_path" | sed "s|$HOME|~|")
+  
+  if [ -d "$full_path" ]; then
+    backup_file="$backup_dir/${base_name}_${timestamp}.tar.gz"
+    echo "Backing up: $display_path"
+    total_size=$(du -sb "$full_path" 2>/dev/null | awk '{print $1}')
+    tar -cf - -C "$(dirname "$full_path")" "$(basename "$full_path")" |
+      pv -pterb -s "$total_size" |
+      gzip >"$backup_file"
+    echo "$display_path backed up to $backup_file"
+  else
+    extension="${base_name##*.}"
+    name="${base_name%.*}"
+
+    if [ "$extension" = "$base_name" ]; then
+      backup_file="$backup_dir/${base_name}_${timestamp}"
+    else
+      backup_file="$backup_dir/${name}_${timestamp}.${extension}"
+    fi
+
+    echo "Backing up: $display_path"
+    pv "$full_path" >"$backup_file"
+    echo "$display_path backed up to $backup_file"
+  fi
+
+  echo ""
+done
+
+echo "All backups completed successfully!"
+echo "Location: $backup_dir"

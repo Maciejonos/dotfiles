@@ -1,0 +1,129 @@
+{
+  // Workspaces
+  "hyprland/workspaces": {
+    "on-scroll-up": "hyprctl dispatch workspace r-1",
+    "on-scroll-down": "hyprctl dispatch workspace r+1",
+    "on-click": "activate",
+    "active-only": false,
+    "all-outputs": true,
+    "format": "{}",
+    "format-icons": {
+      "urgent": "",
+      "active": "",
+      "default": ""
+    },
+    "persistent-workspaces": {
+      "*": 5
+    }
+  },
+
+  // Updates Count
+  "custom/updates": {
+    "format": "  {}",
+    "escape": true,
+    "return-type": "json",
+    "exec": "~/.local/bin/updates",
+    "interval": 1800,
+    "signal": 1,
+    "hide-empty-text": true,
+    "on-click": "ghostty --class=local.floating -e ~/.local/bin/installupdates"
+  },
+
+  // Hypridle
+  "custom/hypridle": {
+    "format": "",
+    "return-type": "json",
+    "escape": true,
+    "exec-on-event": true,
+    "interval": 60,
+    "exec": "~/.config/hypr/scripts/hypridle.sh status",
+    "on-click": "~/.config/hypr/scripts/hypridle.sh toggle"
+  },
+
+  // Clock
+  "clock": {
+    "format": "{:%A %H:%M}",
+    "format-alt": "{:%d %B %Y}",
+    "tooltip": false
+  },
+
+  // CPU
+  "cpu": {
+    "interval": 5,
+    "format": "",
+    "on-click": "ghostty -e btop"
+  },
+
+  // Pulseaudio
+  "pulseaudio": {
+    "scroll-step": 1, 
+    "format": "{icon}",
+    "on-click": "ghostty --class=local.wiremix -e wiremix",
+    "on-click-right": "pamixer -t",
+    "tooltip-format": "Playing at {volume}%",
+    "format-muted": "",
+    "format-icons": {
+      "default": ["", ""]
+    }
+  },
+
+  // Bluetooth
+  "bluetooth": {
+    "format": "",
+    "format-disabled": "󰂲",
+    "format-connected": "",
+    "tooltip-format": "Devices connected: {num_connections}",
+    "on-click": "ghostty --class=local.bluetui -e bluetui"
+  },
+  
+  // Battery
+  "battery": {
+  "format": "{capacity}% {icon}",
+  "format-discharging": "{icon}",
+  "format-charging": "{icon}",
+  "format-plugged": "",
+  "format-icons": {
+    "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
+    "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+  },
+  "format-full": "󰂅",
+  "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+  "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+  "interval": 5,
+  "states": {
+    "warning": 20,
+    "critical": 10
+     }
+  },
+
+  // Network
+  "network": {
+  "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+  "format": "{icon}",
+  "format-wifi": "{icon}",
+  "format-ethernet": "󰀂",
+  "format-disconnected": "󰤮",
+  "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+  "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+  "tooltip-format-disconnected": "Disconnected",
+  "interval": 3,
+  "spacing": 1,
+  "on-click": "ghostty --class=local.impala -e impala"
+  },
+
+  // Quicklinks
+  "custom/brightness": {
+    "format": "",
+    "on-click": "~/.local/bin/ddc-brightness-popup"
+  },
+  "custom/filemanager": {
+    "format": "",
+    "on-click": "nautilus",
+    "tooltip-format": "Open Filemanager"
+  },
+  "custom/openwebui": {
+    "format": "",
+    "on-click": "~/.local/bin/launch-webapp http://localhost:8080",
+    "tooltip-format": "OpenWebUI"
+  }
+}

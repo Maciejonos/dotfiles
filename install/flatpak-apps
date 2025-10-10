@@ -1,0 +1,44 @@
+#!/bin/bash
+set -e
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source "$SCRIPT_DIR/lib/helpers.sh"
+
+FLATPAKS=(
+    # Add your flatpaks here, one per line
+    # Example:
+    com.bambulab.BambuStudio
+    io.github.seadve.Kooha
+    org.onlyoffice.desktopeditors
+)
+
+# Check if flatpak is installed
+if ! command -v flatpak &> /dev/null; then
+    log_error "flatpak is not installed"
+    exit 1
+fi
+
+# Count total flatpaks (excluding comments and empty lines)
+total=0
+for app in "${FLATPAKS[@]}"; do
+    [[ -z "$app" || "$app" =~ ^[[:space:]]*# ]] && continue
+    total=$((total + 1))
+done
+
+# Install each flatpak
+current=0
+for app in "${FLATPAKS[@]}"; do
+    # Skip empty lines or comments
+    [[ -z "$app" || "$app" =~ ^[[:space:]]*# ]] && continue
+
+    current=$((current + 1))
+
+    if flatpak list --app | grep -q "$app"; then
+        log_progress "$app (already installed)" "$current/$total"
+    else
+        spinner "Installing $app... [$current/$total]" flatpak install -y flathub "$app"
+        log_success "$app"
+    fi
+done
+
+log_success "All Flatpak applications installed!"

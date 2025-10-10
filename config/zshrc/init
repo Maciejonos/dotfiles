@@ -1,0 +1,34 @@
+ZSH_THEME="robbyrussell"
+
+plugins=(
+  git
+  sudo
+  archlinux
+  zsh-autosuggestions
+  fast-syntax-highlighting
+  copyfile
+  copybuffer
+)
+
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt appendhistory
+
+source $ZSH/oh-my-zsh.sh
+
+if [[ $(tty) == *"pts"* ]]; then
+  fastfetch
+fi
+
+if command -v starship &>/dev/null; then
+  eval "$(starship init zsh)"
+fi
+
+if command -v zoxide &>/dev/null; then
+  eval "$(zoxide init zsh)"
+fi
+
+if command -v fzf &>/dev/null; then
+  source <(fzf --zsh)
+fi

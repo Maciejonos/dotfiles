@@ -1,0 +1,30 @@
+name = "system"
+name_pretty = "System"
+global_search = true
+fixed_order = true
+icon = ""
+
+[[entries]]
+icon = ""
+text = "Lock"
+actions = { "lock" = "pidof hyprlock || hyprlock &" }
+
+[[entries]]
+icon = "󰤄"
+text = "Suspend"
+actions = { "suspend" = "systemctl suspend" }
+
+[[entries]]
+icon = ""
+text = "Relaunch"
+actions = { "relaunch" = "uwsm stop" }
+
+[[entries]]
+icon = "󰜉"
+text = "Restart"
+actions = { "restart" = "systemctl reboot" }
+
+[[entries]]
+icon = "󰐥"
+text = "Shutdown"
+actions = { "shutdown" = "systemctl poweroff" }

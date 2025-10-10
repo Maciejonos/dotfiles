@@ -1,0 +1,20 @@
+name = "postgres"
+name_pretty = "Postgres"
+global_search = true
+fixed_order = true
+icon = ""
+
+[[entries]]
+icon = ""
+text = "Setup"
+actions = { "postgres-setup" = "ghostty --class=local.floating -e postgres-setup" }
+
+[[entries]]
+icon = ""
+text = "Restore"
+actions = { "postgres-restore-db" = "ghostty --class=local.floating -e pkg-restore-db" }
+
+[[entries]]
+icon = ""
+text = "Backup"
+actions = { "postgres-backup" = "ghostty --class=local.floating -e postgres-backup" }
