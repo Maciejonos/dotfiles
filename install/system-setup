@@ -112,4 +112,47 @@ else
     log_detail "zsh is already the default shell"
 fi
 
+# Configure git user
+log_info "Configuring git user information..."
+
+CURRENT_GIT_NAME=$(git config --global user.name 2>/dev/null)
+CURRENT_GIT_EMAIL=$(git config --global user.email 2>/dev/null)
+
+if [ -n "$CURRENT_GIT_NAME" ] && [ -n "$CURRENT_GIT_EMAIL" ]; then
+    log_detail "Git already configured:"
+    log_detail "  Name:  $CURRENT_GIT_NAME"
+    log_detail "  Email: $CURRENT_GIT_EMAIL"
+
+    if ask_yes_no "Update git config?"; then
+        CURRENT_GIT_NAME=""
+        CURRENT_GIT_EMAIL=""
+    fi
+fi
+
+if [ -z "$CURRENT_GIT_NAME" ]; then
+    if _has_gum; then
+        GIT_NAME=$(gum input --placeholder "Enter your name (used for git)")
+    else
+        read -p "Enter your name: " GIT_NAME
+    fi
+
+    if [ -n "$GIT_NAME" ]; then
+        git config --global user.name "$GIT_NAME"
+        log_success "Set git user.name: $GIT_NAME"
+    fi
+fi
+
+if [ -z "$CURRENT_GIT_EMAIL" ]; then
+    if _has_gum; then
+        GIT_EMAIL=$(gum input --placeholder "Enter your email (used for git)")
+    else
+        read -p "Enter your email: " GIT_EMAIL
+    fi
+
+    if [ -n "$GIT_EMAIL" ]; then
+        git config --global user.email "$GIT_EMAIL"
+        log_success "Set git user.email: $GIT_EMAIL"
+    fi
+fi
+
 log_success "System configuration complete!"
