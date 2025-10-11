@@ -1,6 +1,6 @@
 # Dotfiles Setup for Hyprland on Arch Linux
 
-### Install with  curl -fsSL https://raw.githubusercontent.com/Maciejonos/dotfiles/master/bootstrap.sh | bash
+### Install with  curl -fsSL https://raw.githubusercontent.com/Maciejonos/dotfiles/master/setup.sh | bash
 #### This is meant specifically for Arch Linux with hyprland already installed, and won't work on other systems.
 
 ## Features
