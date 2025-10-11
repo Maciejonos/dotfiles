@@ -7,15 +7,6 @@ source "$SCRIPT_DIR/lib/helpers.sh"
 
 DOTFILES_DIR="$HOME/.config/dotfiles"
 
-# Symlink zshrc
-if [ -f "$DOTFILES_DIR/config/.zshrc" ]; then
-    if [ -e "$HOME/.zshrc" ]; then
-        rm -rf "$HOME/.zshrc"
-    fi
-    ln -snf "$DOTFILES_DIR/config/.zshrc" "$HOME/.zshrc"
-    log_success "Linked .zshrc"
-fi
-
 # Symlink zsh config folder
 if [ -d "$DOTFILES_DIR/config/zshrc" ]; then
     if [ -e "$HOME/.config/zshrc" ]; then

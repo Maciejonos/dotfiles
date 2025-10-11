@@ -2,5 +2,8 @@ config/hypr/conf/monitors.conf
 config/hypr/conf/environments.conf
 config/hypr/conf/keybindings.conf
 config/gtk-3.0/bookmarks
+config/gtk-3.0/settings.ini
+config/gtk-4.0/settings.ini
 current/theme
 current/background
+config/.zshrc

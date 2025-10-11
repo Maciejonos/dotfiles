@@ -42,5 +42,21 @@ else
     log_detail "ly not installed, skipping ly configuration"
 fi
 
+# Copy .zshrc
+log_info "Copying .zshrc config..."
+if [ -e "$HOME/.zshrc" ]; then
+    rm -rf "$HOME/.zshrc"
+fi
+cp "$DOTFILES_DIR/static/config/.zshrc" "$HOME/.zshrc"
+log_success "Copied .zshrc"
+
+# Copy GTK settings.ini files
+log_info "Copying GTK settings..."
+mkdir -p "$HOME/.config/gtk-3.0"
+mkdir -p "$HOME/.config/gtk-4.0"
+cp "$DOTFILES_DIR/static/config/gtk-3.0/settings.ini" "$HOME/.config/gtk-3.0/settings.ini"
+cp "$DOTFILES_DIR/static/config/gtk-4.0/settings.ini" "$HOME/.config/gtk-4.0/settings.ini"
+log_success "Copied GTK settings"
+
 log_success "Static files copied successfully!"
 
