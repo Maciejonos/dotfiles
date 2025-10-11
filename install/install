@@ -4,6 +4,16 @@ set -e
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
+# Ensure the dotfiles folder is in the correct location
+EXPECTED_PATH="$HOME/.config/dotfiles/install"
+if [[ "$SCRIPT_DIR" != "$EXPECTED_PATH" ]]; then
+    echo "ERROR: This script must be run from $EXPECTED_PATH"
+    echo "Current location: $SCRIPT_DIR"
+    echo ""
+    echo "Please move the dotfiles folder to ~/.config/dotfiles and try again"
+    exit 1
+fi
+
 # Source helpers (will work even if gum not installed yet)
 source "$SCRIPT_DIR/lib/helpers.sh"
 
@@ -78,17 +88,18 @@ _installPackages "$SCRIPT_DIR/pkgs.txt"
 log_step "Installing Flatpak applications"
 bash "$SCRIPT_DIR/flatpak-apps"
 
+# Auto-detect laptop/desktop based on battery presence
 BRIGHTNESS_MODE=""
-if ask_yes_no "Install ddcutil? (monitor brightness control)"; then
-    spinner "Installing ddcutil..." paru --noconfirm -S ddcutil
-    log_success "ddcutil installed"
-    BRIGHTNESS_MODE="desktop"
-fi
-
-if ask_yes_no "Install brightnessctl? (laptop brightness control)"; then
+if ls /sys/class/power_supply/BAT* >/dev/null 2>&1 || [ -d /sys/class/power_supply/battery ]; then
+    log_info "Laptop detected (battery found), installing brightnessctl..."
     spinner "Installing brightnessctl..." paru --noconfirm -S brightnessctl
     log_success "brightnessctl installed"
     BRIGHTNESS_MODE="laptop"
+else
+    log_info "Desktop detected (no battery found), installing ddcutil..."
+    spinner "Installing ddcutil..." paru --noconfirm -S ddcutil
+    log_success "ddcutil installed"
+    BRIGHTNESS_MODE="desktop"
 fi
 
 log_step "Installing zsh plugins"

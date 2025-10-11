@@ -100,10 +100,6 @@ elephant-todo
 # Image Processing
 imagemagick
 
-# Qt/Wayland Support
-qt5-wayland
-qt6-wayland
-
 # Desktop Portals
 xdg-desktop-portal-gtk
 xdg-utils
