@@ -35,10 +35,6 @@ prefix = ";"
 provider = "providerlist"
 
 [[providers.prefixes]]
-prefix = "~"
-provider = "archlinuxpkgs"
-
-[[providers.prefixes]]
 prefix = "/"
 provider = "files"
 
@@ -57,11 +53,6 @@ providerlist = [
   { action = "activate", default = true, bind = "Return", after = "ClearReload" },
 ]
 
-archlinuxpkgs = [
-  { action = "install", bind = "Return", default = true },
-  { action = "remove", bind = "Return" },
-]
-
 calc = [
   { action = "copy", default = true, bind = "Return" },
   { action = "delete", bind = "ctrl d", after = "AsyncReload" },
@@ -70,7 +61,7 @@ calc = [
 
 desktopapplications = [
   { action = "start", default = true, bind = "Return" },
-  { action = "start", label = "open+next", bind = "shift Return", after = "KeepOpen" },
+  { action = "start:keep", label = "open+next", bind = "shift Return", after = "KeepOpen" },
   { action = "erase_history", label = "clear hist", bind = "ctrl h", after = "AsyncReload" },
   { action = "pin", bind = "ctrl p", after = "AsyncReload" },
   { action = "unpin", bind = "ctrl p", after = "AsyncReload" },

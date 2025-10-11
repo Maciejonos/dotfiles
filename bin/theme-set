@@ -34,3 +34,4 @@ killall -SIGUSR2 ghostty
 theme-set-eza
 theme-set-vscode
 theme-set-gnome
+theme-set-chromium

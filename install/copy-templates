@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 source "$SCRIPT_DIR/lib/helpers.sh"
 
 DOTFILES_DIR="$HOME/.config/dotfiles"
@@ -18,27 +18,27 @@ fi
 
 # Copy ly configuration
 log_info "Configuring ly display manager..."
-if pacman -Q ly &> /dev/null; then
-    # Copy systemd override (TTY colors)
-    sudo mkdir -p /etc/systemd/system/ly.service.d
-    sudo cp "$DOTFILES_DIR/templates/ly/override.conf" /etc/systemd/system/ly.service.d/override.conf
-    sudo systemctl daemon-reload
-    log_detail "Copied ly systemd override"
+if pacman -Q ly &>/dev/null; then
+  # Copy systemd override (TTY colors)
+  sudo mkdir -p /etc/systemd/system/ly.service.d
+  sudo cp "$DOTFILES_DIR/templates/ly/override.conf" /etc/systemd/system/ly.service.d/override.conf
+  sudo systemctl daemon-reload
+  log_detail "Copied ly systemd override"
 
-    # Copy ly config.ini
-    if [ -f /etc/ly/config.ini ]; then
-        sudo rm /etc/ly/config.ini
-    fi
-    sudo cp "$DOTFILES_DIR/templates/ly/config.ini" /etc/ly/config.ini
-    log_success "Copied ly configuration"
+  # Copy ly config.ini
+  if [ -f /etc/ly/config.ini ]; then
+    sudo rm /etc/ly/config.ini
+  fi
+  sudo cp "$DOTFILES_DIR/templates/ly/config.ini" /etc/ly/config.ini
+  log_success "Copied ly configuration"
 else
-    log_detail "ly not installed, skipping ly configuration"
+  log_detail "ly not installed, skipping ly configuration"
 fi
 
 # Copy .zshrc
 log_info "Copying .zshrc config..."
 if [ -e "$HOME/.zshrc" ]; then
-    rm -rf "$HOME/.zshrc"
+  rm -rf "$HOME/.zshrc"
 fi
 cp "$DOTFILES_DIR/templates/config/.zshrc" "$HOME/.zshrc"
 log_success "Copied .zshrc"
@@ -74,5 +74,15 @@ if [ -f "$DOTFILES_DIR/templates/config/gtk-4.0/settings.ini" ]; then
     log_detail "GTK-4.0 settings.ini already exists, skipping"
   fi
 fi
-log_success "Templates copied successfully!"
 
+# Copy chromium Preferences
+if [ -f "$DOTFILES_DIR/templates/config/chromium/Default/Preferences" ]; then
+  if [ ! -f "$HOME/.config/chromium/Default/Preferences" ]; then
+    mkdir -p "$HOME/.config/chromium/Default"
+    cp "$DOTFILES_DIR/templates/config/chromium/Default/Preferences" "$HOME/.config/chromium/Default/Preferences"
+    log_success "Copied chromium Preferences"
+  else
+    log_detail "chromium Preferences already exists, skipping"
+  fi
+fi
+log_success "Templates copied successfully!"

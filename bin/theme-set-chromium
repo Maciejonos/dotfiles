@@ -1,0 +1,17 @@
+#!/bin/bash
+
+CHROMIUM_THEME=~/.config/dotfiles/current/theme/chromium.theme
+
+if command -v chromium >/dev/null 2>&1; then
+  if [[ -f $CHROMIUM_THEME ]]; then
+    rgb=$(<"$CHROMIUM_THEME")
+    THEME_HEX_COLOR=$(printf '#%02x%02x%02x' ${rgb//,/ })
+  else
+    # Use a default, neutral grey if theme doesn't have a color
+    THEME_HEX_COLOR="#1c2027"
+  fi
+
+  echo "{\"BrowserThemeColor\": \"$THEME_HEX_COLOR\"}" | tee "/etc/chromium/policies/managed/color.json" >/dev/null
+  chromium --refresh-platform-policy --no-startup-window
+fi
+
