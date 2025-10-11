@@ -33,9 +33,7 @@ echo "$selected_dbs" | while read -r db; do
   backup_file="$backup_dir/${db}_${timestamp}.backup"
   log_info "Backing up: $db"
 
-  db_size=$(psql -U postgres -t -c "SELECT pg_database_size('$db');" | tr -d ' ')
-
-  pg_dump -U postgres -Fc "$db" | pv -s "$db_size" > "$backup_file"
+  pg_dump -U postgres -Fc "$db" | pv >"$backup_file"
 
   log_success "$db backed up"
   log_detail "$backup_file"
@@ -44,3 +42,4 @@ done
 
 log_detail "Backup location: $backup_dir"
 show_done
+
