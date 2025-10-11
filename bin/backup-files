@@ -1,5 +1,8 @@
 #!/bin/bash
+source "$HOME/.config/dotfiles/bin/lib/helpers.sh"
 set -e
+
+log_header "Backup Files"
 
 # Configuration
 backup_dir="$HOME/backups"
@@ -9,12 +12,12 @@ selected_for_backup=()
 
 # Dependency checks
 if ! command -v fzf &>/dev/null; then
-  echo "Error: fzf is not installed. Please install it to continue."
+  log_error "fzf is not installed. Please install it to continue."
   exit 1
 fi
 
 if ! command -v pv &>/dev/null; then
-  echo "Error: pv is not installed. Please install it for progress bars."
+  log_error "pv is not installed. Please install it for progress bars."
   exit 1
 fi
 
@@ -118,29 +121,30 @@ done
 
 # Check if anything was selected
 if [ ${#selected_for_backup[@]} -eq 0 ]; then
-  echo "No items selected. Exiting."
+  log_info "No items selected. Exiting."
   exit 0
 fi
 
-echo "Starting backup of ${#selected_for_backup[@]} items..."
+log_step "Starting backup of ${#selected_for_backup[@]} items..."
 
 for full_path in "${selected_for_backup[@]}"; do
   if [ ! -e "$full_path" ]; then
-    echo "Warning: '$full_path' does not exist, skipping..."
+    log_error "Warning: '$full_path' does not exist, skipping..."
     continue
   fi
-  
+
   base_name=$(basename "$full_path")
   display_path=$(echo "$full_path" | sed "s|$HOME|~|")
-  
+
   if [ -d "$full_path" ]; then
     backup_file="$backup_dir/${base_name}_${timestamp}.tar.gz"
-    echo "Backing up: $display_path"
+    log_info "Backing up: $display_path"
     total_size=$(du -sb "$full_path" 2>/dev/null | awk '{print $1}')
     tar -cf - -C "$(dirname "$full_path")" "$(basename "$full_path")" |
       pv -pterb -s "$total_size" |
       gzip >"$backup_file"
-    echo "$display_path backed up to $backup_file"
+    log_success "$display_path backed up"
+    log_detail "$backup_file"
   else
     extension="${base_name##*.}"
     name="${base_name%.*}"
@@ -151,13 +155,14 @@ for full_path in "${selected_for_backup[@]}"; do
       backup_file="$backup_dir/${name}_${timestamp}.${extension}"
     fi
 
-    echo "Backing up: $display_path"
+    log_info "Backing up: $display_path"
     pv "$full_path" >"$backup_file"
-    echo "$display_path backed up to $backup_file"
+    log_success "$display_path backed up"
+    log_detail "$backup_file"
   fi
 
   echo ""
 done
 
-echo "All backups completed successfully!"
-echo "Location: $backup_dir"
+log_detail "Backup location: $backup_dir"
+show_done

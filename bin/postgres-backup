@@ -1,23 +1,26 @@
 #!/bin/bash
+source "$HOME/.config/dotfiles/bin/lib/helpers.sh"
 set -e
 
-echo "Fetching PostgreSQL databases..."
+log_header "PostgreSQL Backup"
+
+log_step "Fetching PostgreSQL databases..."
 databases=$(psql -U postgres -t -c "SELECT datname FROM pg_database WHERE datistemplate = false AND datname NOT IN ('postgres');" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | grep -v '^$')
 
 if ! command -v fzf &>/dev/null; then
-  echo "Error: fzf is not installed"
+  log_error "fzf is not installed"
   exit 1
 fi
 
 if ! command -v pv &>/dev/null; then
-  echo "Error: pv is not installed"
+  log_error "pv is not installed"
   exit 1
 fi
 
 selected_dbs=$(echo "$databases" | fzf --multi --prompt="Select databases (Tab to select multiple): " --height=40% --border)
 
 if [ -z "$selected_dbs" ]; then
-  echo "No databases selected. Exiting."
+  log_info "No databases selected. Exiting."
   exit 0
 fi
 
@@ -25,17 +28,19 @@ backup_dir="$HOME/postgres_backups"
 mkdir -p "$backup_dir"
 timestamp=$(date +%Y-%m-%d_%H%M)
 
+log_step "Starting backup..."
 echo "$selected_dbs" | while read -r db; do
   backup_file="$backup_dir/${db}_${timestamp}.backup"
-  echo "Backing up: $db"
-  
+  log_info "Backing up: $db"
+
   db_size=$(psql -U postgres -t -c "SELECT pg_database_size('$db');" | tr -d ' ')
-  
+
   pg_dump -U postgres -Fc "$db" | pv -s "$db_size" > "$backup_file"
-  
-  echo "$db backed up to $backup_file"
+
+  log_success "$db backed up"
+  log_detail "$backup_file"
   echo ""
 done
 
-echo "All backups completed successfully!"
-echo "Location: $backup_dir"
+log_detail "Backup location: $backup_dir"
+show_done

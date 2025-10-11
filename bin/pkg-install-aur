@@ -1,4 +1,5 @@
 #!/bin/bash
+source "$HOME/.config/dotfiles/bin/lib/helpers.sh"
 
 fzf_args=(
   --multi
@@ -19,5 +20,5 @@ pkg_names=$(paru -Slqa | fzf "${fzf_args[@]}")
 if [[ -n "$pkg_names" ]]; then
   echo "$pkg_names" | tr '\n' ' ' | xargs paru -S --noconfirm
   sudo updatedb
-  show-done
+  show_done
 fi

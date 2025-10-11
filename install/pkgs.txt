@@ -5,7 +5,6 @@ polkit-gnome
 
 # Browsers
 chromium
-zen-browser-bin
 
 # Development
 git
@@ -27,9 +26,7 @@ fastfetch
 fd
 fzf
 ripgrep
-tree
 zoxide
-figlet
 pv
 
 # Hyprland Ecosystem

@@ -1,4 +1,5 @@
 #!/bin/bash
+source "$HOME/.config/dotfiles/bin/lib/helpers.sh"
 
 CACHE_DIR="$HOME/.cache/matugen-wallpaper"
 CACHE_FILE="$CACHE_DIR/current_wallpaper"
@@ -12,12 +13,12 @@ if [ -n "$1" ]; then
 elif [ -f "$CACHE_FILE" ]; then
   WALLPAPER=$(cat "$CACHE_FILE")
 else
-  echo "No wallpaper specified and no cached wallpaper found"
+  log_error "No wallpaper specified and no cached wallpaper found"
   exit 1
 fi
 
 if [ ! -f "$WALLPAPER" ]; then
-  echo "Wallpaper file not found: $WALLPAPER"
+  log_error "Wallpaper file not found: $WALLPAPER"
   exit 1
 fi
 
@@ -26,11 +27,11 @@ echo "$WALLPAPER" >"$CACHE_FILE"
 # Update the current background symlink
 ln -nsf "$WALLPAPER" "$CURRENT_BACKGROUND_LINK"
 
-echo "Using wallpaper: $WALLPAPER"
-echo "Running matugen..."
+log_step "Applying wallpaper theme"
+log_detail "$WALLPAPER"
 $HOME/.local/bin/matugen image "$WALLPAPER" -m "dark"
 
-echo "Reloading applications..."
+log_step "Reloading applications..."
 sleep 0.5
 
 # Waybar
@@ -57,4 +58,4 @@ theme-set-eza
 # VSCode theme
 theme-set-vscode
 
-echo "Done! Theme applied."
+log_success "Theme applied"

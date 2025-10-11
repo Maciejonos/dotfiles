@@ -1,53 +1,55 @@
 #!/bin/bash
+source "$HOME/.config/dotfiles/bin/lib/helpers.sh"
 set -e
 
-echo "PostgreSQL Setup Script for Arch Linux"
+log_header "PostgreSQL Setup"
 
 # Check if running as root
 if [ "$EUID" -eq 0 ]; then
-  echo "Error: Don't run this script as root/sudo"
+  log_error "Don't run this script as root/sudo"
   exit 1
 fi
 
 # Install PostgreSQL
-echo "Installing PostgreSQL..."
+log_step "Installing PostgreSQL..."
 sudo pacman -S --needed postgresql
 
 # Initialize the database cluster
-echo "Initializing database cluster..."
+log_step "Initializing database cluster..."
 if [ ! -d "/var/lib/postgres/data/PG_VERSION" ]; then
   sudo -u postgres initdb -D /var/lib/postgres/data \
     --locale=C.UTF-8 \
     --auth-local=peer \
     --auth-host=scram-sha-256
+  log_success "Database cluster initialized"
 else
-  echo "Database cluster already exists, skipping initialization"
+  log_info "Database cluster already exists, skipping initialization"
 fi
 
 # Enable and start PostgreSQL service
-echo "Enabling and starting PostgreSQL service..."
+log_step "Enabling and starting PostgreSQL service..."
 sudo systemctl enable postgresql
 sudo systemctl start postgresql
 
 # Test connection
-echo "Testing connection..."
+log_step "Testing connection..."
 if sudo -u postgres psql -c '\l' &>/dev/null; then
-  echo "PostgreSQL is running and accessible"
+  log_success "PostgreSQL is running and accessible"
 else
-  echo "Warning: Could not connect to PostgreSQL"
+  log_error "Could not connect to PostgreSQL"
 fi
 
 # Install Beekeeper Studio
-echo "Installing Beekeeper Studio..."
+log_step "Installing Beekeeper Studio..."
 if ! command -v paru &>/dev/null; then
-  echo "Warning: paru not installed, skipping Beekeeper Studio"
+  log_info "paru not installed, skipping Beekeeper Studio"
 else
-  if paru -S --needed beekeeper-studio-bin 2>/dev/null; then
-    echo "Beekeeper Studio installed"
+  if paru -S --noconfirm beekeeper-studio-bin 2>/dev/null; then
+    log_success "Beekeeper Studio installed"
   else
-    echo "Warning: Could not install Beekeeper Studio"
-    echo "Install manually: paru -S beekeeper-studio-bin"
+    log_error "Could not install Beekeeper Studio"
+    log_detail "Install manually: paru -S beekeeper-studio-bin"
   fi
 fi
 
-echo "PostgreSQL setup completed successfully!"
+show_done

@@ -1,7 +1,8 @@
 #!/bin/bash
+source "$HOME/.config/dotfiles/bin/lib/helpers.sh"
 
 if [[ -z $1 && $1 != "CNCLD" ]]; then
-  echo "Usage: theme-set <theme-name>"
+  log_error "Usage: theme-set <theme-name>"
   exit 1
 fi
 
@@ -13,7 +14,7 @@ THEME_PATH="$THEMES_DIR/$THEME_NAME"
 
 # Check if the theme entered exists
 if [[ ! -d "$THEME_PATH" ]]; then
-  echo "Theme '$THEME_NAME' does not exist in $THEMES_DIR"
+  log_error "Theme '$THEME_NAME' does not exist in $THEMES_DIR"
   exit 1
 fi
 

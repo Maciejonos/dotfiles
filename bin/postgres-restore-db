@@ -1,25 +1,29 @@
 #!/bin/bash
+source "$HOME/.config/dotfiles/bin/lib/helpers.sh"
 set -e
+
+log_header "PostgreSQL Restore"
 
 backup_dir="$HOME/postgres_backups"
 
 # Check if backup directory exists
 if [ ! -d "$backup_dir" ]; then
-    echo "Error: Backup directory $backup_dir does not exist"
+    log_error "Backup directory $backup_dir does not exist"
     exit 1
 fi
 
 # Check for fzf
 if ! command -v fzf &> /dev/null; then
-    echo "Error: fzf is not installed"
+    log_error "fzf is not installed"
     exit 1
 fi
 
+log_step "Finding backup files..."
 # Find all backup files
 backup_files=$(find "$backup_dir" -name "*.backup" -type f -printf "%f\n" | sort -r)
 
 if [ -z "$backup_files" ]; then
-    echo "No backup files found in $backup_dir"
+    log_error "No backup files found in $backup_dir"
     exit 1
 fi
 
@@ -27,7 +31,7 @@ fi
 selected_backup=$(echo "$backup_files" | fzf --prompt="Select backup to restore: " --height=40% --border)
 
 if [ -z "$selected_backup" ]; then
-    echo "No backup selected. Exiting."
+    log_info "No backup selected. Exiting."
     exit 0
 fi
 
@@ -36,13 +40,14 @@ backup_file="$backup_dir/$selected_backup"
 # Extract database name from filename (format: dbname_YYYY-MM-DD_HHMM.backup)
 db_name=$(echo "$selected_backup" | sed 's/_[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}_[0-9]\{4\}\.backup$//')
 
-echo "Restore Details:"
-echo "Backup file: $selected_backup"
-echo "Database name: $db_name"
+log_step "Restore Details"
+log_detail "Backup file: $selected_backup"
+log_detail "Database name: $db_name"
+echo
 
 # Check if database already exists
 if psql -U postgres -lqt | cut -d \| -f 1 | grep -qw "$db_name"; then
-    echo "Warning: Database '$db_name' already exists!"
+    log_error "Database '$db_name' already exists!"
     echo ""
     echo "Options:"
     echo "  1) Drop and recreate (DESTRUCTIVE - all data will be lost)"
@@ -50,44 +55,44 @@ if psql -U postgres -lqt | cut -d \| -f 1 | grep -qw "$db_name"; then
     echo "  3) Cancel"
     echo ""
     read -p "Enter choice (1/2/3): " choice
-    
+
     case $choice in
         1)
             echo ""
             read -p "Are you absolutely sure? Type '$db_name' to confirm: " confirm
             if [ "$confirm" != "$db_name" ]; then
-                echo "Confirmation failed. Exiting."
+                log_info "Confirmation failed. Exiting."
                 exit 0
             fi
-            echo "Dropping database '$db_name'..."
+            log_step "Dropping database '$db_name'..."
             dropdb -U postgres "$db_name"
             ;;
         2)
             echo ""
             read -p "Enter new database name: " db_name
             if [ -z "$db_name" ]; then
-                echo "No database name provided. Exiting."
+                log_info "No database name provided. Exiting."
                 exit 0
             fi
             ;;
         3)
-            echo "Cancelled."
+            log_info "Cancelled."
             exit 0
             ;;
         *)
-            echo "Invalid choice. Exiting."
+            log_error "Invalid choice. Exiting."
             exit 1
             ;;
     esac
 fi
 
 # Create database
-echo "Creating database '$db_name'..."
+log_step "Creating database '$db_name'..."
 createdb -U postgres "$db_name"
 
 # Restore backup
-echo "Restoring backup..."
+log_step "Restoring backup..."
 pg_restore -U postgres -d "$db_name" -v "$backup_file"
 
-echo "Restore completed successfully!"
-echo "Database: $db_name"
+log_success "Database restored: $db_name"
+show_done

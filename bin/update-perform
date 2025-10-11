@@ -1,0 +1,77 @@
+#!/bin/bash
+source "$HOME/.config/dotfiles/bin/lib/helpers.sh"
+
+# Check if command exists
+_checkCommandExists() {
+  cmd="$1"
+  if ! command -v "$cmd" >/dev/null; then
+    echo 1
+    return
+  fi
+  echo 0
+  return
+}
+
+
+clear
+log_header "Updates"
+
+if ask_yes_no "Update now?"; then
+  log_step "Update started..."
+elif [ $? -eq 130 ]; then
+  exit 130
+else
+  log_info "Update canceled."
+  exit
+fi
+
+log_step "Checking for git updates..."
+if command -v update-git &>/dev/null; then
+  update-git
+else
+  log_info "update-git command not found, skipping"
+fi
+echo
+
+if [[ $(_checkCommandExists "pacman") == 0 ]]; then
+  paru
+else
+  log_error "Platform not supported"
+  show_done
+  exit 1
+fi
+echo
+
+log_step "Searching for Flatpak updates..."
+flatpak update
+echo
+
+# ------------------------------------------------------
+# Remove orphan packages
+# ------------------------------------------------------
+orphans=$(pacman -Qtdq)
+if [[ -n $orphans ]]; then
+  log_step "Removing orphan system packages"
+  for pkg in $orphans; do
+    sudo pacman -Rs --noconfirm "$pkg" || true
+  done
+  log_success "Orphan packages removed"
+else
+  log_info "No orphan packages found"
+fi
+echo
+
+# Reload Waybar
+pkill -RTMIN+1 waybar
+echo
+
+if [ "$(uname -r | sed 's/-arch/\.arch/')" != "$(pacman -Q linux | awk '{print $2}')" ]; then
+  log_info "Linux kernel has been updated."
+  if ask_yes_no "Reboot now?"; then
+    sudo reboot now
+  fi
+fi
+
+# Finishing
+show_done
+exit 1

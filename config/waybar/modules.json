@@ -22,11 +22,11 @@
     "format": "  {}",
     "escape": true,
     "return-type": "json",
-    "exec": "~/.local/bin/updates",
+    "exec": "~/.local/bin/update-check",
     "interval": 1800,
     "signal": 1,
     "hide-empty-text": true,
-    "on-click": "ghostty --class=local.floating -e ~/.local/bin/installupdates"
+    "on-click": "ghostty --class=local.floating -e ~/.local/bin/update-perform"
   },
 
   // Hypridle

@@ -1,17 +1,20 @@
 #!/bin/bash
+source "$HOME/.config/dotfiles/bin/lib/helpers.sh"
 set -e
+
+log_header "Restore Backups"
 
 # Configuration
 restore_dir="$HOME"
 
 # Dependency checks
 if ! command -v fzf &>/dev/null; then
-  echo "Error: fzf is not installed. Please install it to continue."
+  log_error "fzf is not installed. Please install it to continue."
   exit 1
 fi
 
 # Main logic
-echo "Searching for archive files in home directory..."
+log_step "Searching for archive files in home directory..."
 
 # Find all archive files in home directory
 archives=$(find "$HOME" -type f -mindepth 1 -maxdepth 5 \
@@ -25,7 +28,7 @@ archives=$(find "$HOME" -type f -mindepth 1 -maxdepth 5 \
   2>/dev/null | sed "s|$HOME|~|" | sort)
 
 if [ -z "$archives" ]; then
-  echo "No archive files found in home directory"
+  log_error "No archive files found in home directory"
   exit 1
 fi
 
@@ -45,32 +48,32 @@ fzf_args=(
 selected_archives=$(echo "$archives" | fzf "${fzf_args[@]}")
 
 if [ -z "$selected_archives" ]; then
-  echo "No archives selected. Exiting."
+  log_info "No archives selected. Exiting."
   exit 0
 fi
 
-echo "Restoring archives..."
+log_step "Restoring archives..."
 
 # Ask for restore location
 read -p "Restore to (default: $restore_dir): " custom_restore_dir
 restore_dir="${custom_restore_dir:-$restore_dir}"
 
 if [ ! -d "$restore_dir" ]; then
-  echo "Error: Directory $restore_dir does not exist"
+  log_error "Directory $restore_dir does not exist"
   exit 1
 fi
 
 echo "$selected_archives" | while read -r archive_display; do
   # Convert ~/ back to full path
   archive=$(echo "$archive_display" | sed "s|^~|$HOME|")
-  
+
   if [ ! -e "$archive" ]; then
-    echo "Warning: '$archive_display' does not exist, skipping..."
+    log_error "Warning: '$archive_display' does not exist, skipping..."
     continue
   fi
-  
+
   filename=$(basename "$archive")
-  echo "Restoring: $archive_display"
+  log_info "Restoring: $archive_display"
   
   # Determine decompression command based on file extension
   case "$archive" in
@@ -96,13 +99,14 @@ echo "$selected_archives" | while read -r archive_display; do
       unrar x "$archive" "$restore_dir"
       ;;
     *)
-      echo "  -> Unknown archive type, skipping"
+      log_error "Unknown archive type, skipping"
       continue
       ;;
   esac
-  
-  echo "$filename restored to $restore_dir"
+
+  log_success "$filename restored"
+  log_detail "$restore_dir"
   echo ""
 done
 
-echo "All restores completed successfully!"
+show_done
