@@ -25,6 +25,7 @@ fzf
 ripgrep
 zoxide
 pv
+less
 
 # Hyprland Ecosystem
 hyprpaper
