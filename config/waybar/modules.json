@@ -109,21 +109,5 @@
   "interval": 3,
   "spacing": 1,
   "on-click": "ghostty --class=local.impala -e impala"
-  },
-
-  // Quicklinks
-  "custom/brightness": {
-    "format": "",
-    "on-click": "~/.local/bin/ddc-brightness-popup"
-  },
-  "custom/filemanager": {
-    "format": "",
-    "on-click": "nautilus",
-    "tooltip-format": "Open Filemanager"
-  },
-  "custom/openwebui": {
-    "format": "",
-    "on-click": "~/.local/bin/launch-webapp http://localhost:8080",
-    "tooltip-format": "OpenWebUI"
   }
 }

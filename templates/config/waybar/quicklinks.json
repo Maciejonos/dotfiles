@@ -1,0 +1,13 @@
+// Quicklinks
+
+{ 
+  "custom/brightness": {
+    "format": "",
+    "on-click": "~/.local/bin/ddc-brightness-popup"
+  },
+  "custom/filemanager": {
+    "format": "",
+    "on-click": "nautilus",
+    "tooltip-format": "Open Filemanager"
+  }
+}

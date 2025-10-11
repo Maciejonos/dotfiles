@@ -81,17 +81,11 @@ sudo ufw --force enable
 sudo systemctl enable ufw
 log_success "UFW configured and enabled"
 
-# Setup zsh
-log_info "Setting zsh as default shell..."
-ZSH_PATH=/usr/bin/zsh
-CURRENT_SHELL=$(getent passwd $USER | cut -d: -f7)
-
-if [ "$CURRENT_SHELL" != "$ZSH_PATH" ]; then
-    chsh -s "$ZSH_PATH"
-    log_success "Default shell changed to zsh"
-    log_info "Note: You need to log out and back in for shell change to take effect"
-else
-    log_detail "zsh is already the default shell"
+# Detect and configure NVIDIA if present
+log_step "Checking for NVIDIA GPU"
+if lspci | grep -i nvidia &> /dev/null; then
+    log_info "NVIDIA GPU detected, configuring for Hyprland..."
+    bash "$SCRIPT_DIR/nvidia-setup"
 fi
 
 # Configure git user

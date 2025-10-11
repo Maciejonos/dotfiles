@@ -4,6 +4,19 @@ set -e
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 source "$SCRIPT_DIR/lib/helpers.sh"
 
+# Setup zsh
+log_info "Setting zsh as default shell..."
+ZSH_PATH=/usr/bin/zsh
+CURRENT_SHELL=$(getent passwd $USER | cut -d: -f7)
+
+if [ "$CURRENT_SHELL" != "$ZSH_PATH" ]; then
+    chsh -s "$ZSH_PATH"
+    log_success "Default shell changed to zsh"
+    log_info "Note: You need to log out and back in for shell change to take effect"
+else
+    log_detail "zsh is already the default shell"
+fi
+
 # Install Oh My Zsh
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
     log_info "Installing Oh My Zsh..."
@@ -30,12 +43,6 @@ if [ ! -d "$ZSH_CUSTOM/plugins/fast-syntax-highlighting" ]; then
     log_success "fast-syntax-highlighting installed"
 else
     log_detail "fast-syntax-highlighting already installed"
-fi
-
-# Remove default .zshrc created by oh-my-zsh
-if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
-    log_info "Removing default .zshrc (will be replaced by dotfiles symlink)"
-    rm "$HOME/.zshrc"
 fi
 
 log_success "Zsh plugins installed!"

@@ -14,10 +14,10 @@ if [[ "$SCRIPT_DIR" != "$EXPECTED_PATH" ]]; then
     exit 1
 fi
 
-# Source helpers (will work even if gum not installed yet)
+# Source helpers
 source "$SCRIPT_DIR/lib/helpers.sh"
 
-# Ensure gum is installed first for better UI
+# Ensure gum is installed first
 ensure_gum
 
 _isInstalled() {
@@ -35,12 +35,10 @@ _installParu() {
     if [[ ! $(_isInstalled "base-devel") == 0 ]]; then
         log_info "Installing base-devel..."
         sudo pacman --noconfirm -S base-devel
-        log_success "base-devel installed"
     fi
     if [[ ! $(_isInstalled "git") == 0 ]]; then
         log_info "Installing git..."
         sudo pacman --noconfirm -S git
-        log_success "git installed"
     fi
 
     log_info "Cloning paru from AUR..."
@@ -86,60 +84,19 @@ log_step "Installing packages"
 _installPackages "$SCRIPT_DIR/pkgs.txt"
 
 log_step "Installing Flatpak applications"
-bash "$SCRIPT_DIR/flatpak-apps"
-
-# Auto-detect laptop/desktop based on battery presence
-BRIGHTNESS_MODE=""
-if ls /sys/class/power_supply/BAT* >/dev/null 2>&1 || [ -d /sys/class/power_supply/battery ]; then
-    log_info "Laptop detected (battery found), installing brightnessctl..."
-    spinner "Installing brightnessctl..." paru --noconfirm -S brightnessctl
-    log_success "brightnessctl installed"
-    BRIGHTNESS_MODE="laptop"
-else
-    log_info "Desktop detected (no battery found), installing ddcutil..."
-    spinner "Installing ddcutil..." paru --noconfirm -S ddcutil
-    log_success "ddcutil installed"
-    BRIGHTNESS_MODE="desktop"
-fi
+bash "$SCRIPT_DIR/flatpak"
 
 log_step "Installing zsh plugins"
-bash "$SCRIPT_DIR/zsh-plugins"
+bash "$SCRIPT_DIR/zsh-setup"
 
 log_step "Creating symlinks"
 bash "$SCRIPT_DIR/symlinks"
 
-# Copy keybindings after symlinks are created
-if [ "$BRIGHTNESS_MODE" = "laptop" ]; then
-    if [ -f "$SCRIPT_DIR/../static/hypr/conf/keybindings-laptop.conf" ]; then
-        cp "$SCRIPT_DIR/../static/hypr/conf/keybindings-laptop.conf" "$HOME/.config/hypr/conf/keybindings.conf"
-        log_success "Copied laptop keybindings"
-    fi
-elif [ "$BRIGHTNESS_MODE" = "desktop" ]; then
-    if [ -f "$SCRIPT_DIR/../static/hypr/conf/keybindings.conf" ]; then
-        cp "$SCRIPT_DIR/../static/hypr/conf/keybindings.conf" "$HOME/.config/hypr/conf/keybindings.conf"
-        log_success "Copied desktop keybindings"
-    fi
-fi
-
 log_step "Configuring system"
 bash "$SCRIPT_DIR/system-setup"
 
-log_step "Copying static files"
-bash "$SCRIPT_DIR/static-files"
-
-log_step "Setting GTK font"
-gsettings set org.gnome.desktop.interface font-name 'CaskaydiaMono Nerd Font Mono 11'
-gsettings set org.gnome.desktop.interface monospace-font-name 'CaskaydiaMono Nerd Font Mono 11'
-log_success "GTK font configured"
-
-# Detect and configure NVIDIA if present
-log_step "Checking for NVIDIA GPU"
-if lspci | grep -i nvidia &> /dev/null; then
-    log_info "NVIDIA GPU detected, configuring for Hyprland..."
-    bash "$SCRIPT_DIR/nvidia-setup"
-else
-    log_info "No NVIDIA GPU detected, skipping NVIDIA setup"
-fi
+log_step "Copying template files"
+bash "$SCRIPT_DIR/copy-templates"
 
 END_TIME=$(date +%s)
 TOTAL_TIME=$((END_TIME - START_TIME))
@@ -151,7 +108,7 @@ log_header "Installation Complete!"
 echo
 log_success "Installed in ${MINUTES}m ${SECONDS}s"
 echo
-log_info "Please log out and back in for all changes to take effect"
+log_info "Please reboot for all changes to take effect"
 echo
 
 if ask_yes_no "Reboot now?"; then

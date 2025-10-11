@@ -18,17 +18,15 @@ if ! command -v flatpak &> /dev/null; then
     exit 1
 fi
 
-# Count total flatpaks (excluding comments and empty lines)
 total=0
 for app in "${FLATPAKS[@]}"; do
     [[ -z "$app" || "$app" =~ ^[[:space:]]*# ]] && continue
     total=$((total + 1))
 done
 
-# Install each flatpak
 current=0
 for app in "${FLATPAKS[@]}"; do
-    # Skip empty lines or comments
+
     [[ -z "$app" || "$app" =~ ^[[:space:]]*# ]] && continue
 
     current=$((current + 1))

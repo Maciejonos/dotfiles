@@ -6,7 +6,8 @@
     "spacing": 0,
     "height": 26,
     "include": [
-        "~/.config/waybar/modules.json"
+        "~/.config/waybar/modules.json",
+        "~/.config/waybar/quicklinks.json"
     ],
 
     "hyprland/workspaces": {
@@ -36,8 +37,7 @@
     // Modules Left
     "modules-left": [
         "hyprland/workspaces",
-        "custom/filemanager",
-        "custom/openwebui"
+        "custom/filemanager"
     ],
 
     // Modules Center
