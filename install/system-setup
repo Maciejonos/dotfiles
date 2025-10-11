@@ -81,25 +81,7 @@ sudo ufw --force enable
 sudo systemctl enable ufw
 log_success "UFW configured and enabled"
 
-# Add user to docker group and enable service
-log_info "Configuring Docker..."
-if command -v docker &> /dev/null; then
-    if groups $USER | grep -q '\bdocker\b'; then
-        log_detail "User already in docker group"
-    else
-        sudo usermod -aG docker $USER
-        log_detail "Added $USER to docker group"
-        log_info "Note: Log out and back in for docker group to take effect"
-    fi
-
-    # Enable and start docker service
-    sudo systemctl enable docker.service
-    sudo systemctl start docker.service
-    log_success "Docker service enabled and started"
-else
-    log_detail "Docker not installed, skipping configuration"
-fi
-
+# Setup zsh
 log_info "Setting zsh as default shell..."
 ZSH_PATH=/usr/bin/zsh
 CURRENT_SHELL=$(getent passwd $USER | cut -d: -f7)

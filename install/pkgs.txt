@@ -9,9 +9,6 @@ chromium
 # Development
 git
 lazygit
-lazydocker
-docker
-docker-compose
 neovim
 visual-studio-code-bin
 
@@ -56,6 +53,9 @@ pamixer
 wiremix
 
 # Bluetooth & Network
+bluez
+bluez-libs
+bluez-utils
 bluetui
 openssh
 ufw
@@ -87,7 +87,6 @@ kora-icon-theme
 gnome-themes-extra
 
 # Applications
-anytype-bin
 localsend-bin
 mpv
 
