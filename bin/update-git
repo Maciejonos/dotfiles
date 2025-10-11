@@ -3,23 +3,31 @@ source "$HOME/.config/dotfiles/bin/lib/helpers.sh"
 
 DOTFILES_DIR="$HOME/.config/dotfiles"
 
-# Get remote tag
-latest_tag=$(git -C "$DOTFILES_DIR" ls-remote --tags origin | grep -v "{}" | awk '{print $2}' | sed 's#refs/tags/##' | sort -V | tail -n 1)
-if [[ -z "$latest_tag" ]]; then
-  log_error "Could not retrieve latest tag."
+# Fetch remote changes
+git -C "$DOTFILES_DIR" fetch origin --quiet
+
+# Get current local commit
+local_commit=$(git -C "$DOTFILES_DIR" rev-parse HEAD)
+if [[ -z "$local_commit" ]]; then
+  log_error "Could not retrieve local commit"
   exit 1
 fi
 
-# Get local tag
-current_tag=$(git -C "$DOTFILES_DIR" describe --tags $(git -C "$DOTFILES_DIR" rev-list --tags --max-count=1) 2>/dev/null)
-if [[ -z "$current_tag" ]]; then
-  log_error "Could not retrieve current tag."
+# Get remote commit
+remote_commit=$(git -C "$DOTFILES_DIR" rev-parse origin/$(git -C "$DOTFILES_DIR" branch --show-current))
+if [[ -z "$remote_commit" ]]; then
+  log_error "Could not retrieve remote commit"
   exit 1
 fi
 
-# Compare versions
-if [[ "$current_tag" != "$latest_tag" ]]; then
-  log_success "Dotfiles update available ($latest_tag)"
+# Get short versions for display
+local_short=$(echo "$local_commit" | cut -c1-7)
+remote_short=$(echo "$remote_commit" | cut -c1-7)
+
+# Compare commits
+if [[ "$local_commit" != "$remote_commit" ]]; then
+  log_success "Dotfiles update available ($remote_short)"
+  log_info "Pulling changes..."
 
   # Pull with autostash, then check for conflicts
   git -C "$DOTFILES_DIR" pull --autostash
@@ -27,6 +35,6 @@ if [[ "$current_tag" != "$latest_tag" ]]; then
 
   exit 0
 else
-  log_info "Dotfiles are up to date ($current_tag)"
+  log_info "Dotfiles are up to date ($local_short)"
   exit 1
 fi
