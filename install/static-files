@@ -31,13 +31,21 @@ else
   log_success "Copied env.conf"
 fi
 
-# Copy ly systemd override (TTY colors)
-log_info "Configuring ly display manager colors..."
+# Copy ly configuration
+log_info "Configuring ly display manager..."
 if pacman -Q ly &> /dev/null; then
+    # Copy systemd override (TTY colors)
     sudo mkdir -p /etc/systemd/system/ly.service.d
     sudo cp "$DOTFILES_DIR/static/ly/override.conf" /etc/systemd/system/ly.service.d/override.conf
     sudo systemctl daemon-reload
-    log_success "Copied ly color override"
+    log_detail "Copied ly systemd override"
+
+    # Copy ly config.ini
+    if [ -f /etc/ly/config.ini ]; then
+        sudo rm /etc/ly/config.ini
+    fi
+    sudo cp "$DOTFILES_DIR/static/ly/config.ini" /etc/ly/config.ini
+    log_success "Copied ly configuration"
 else
     log_detail "ly not installed, skipping ly configuration"
 fi
