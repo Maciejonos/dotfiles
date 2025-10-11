@@ -7,7 +7,7 @@ icon = ""
 [[entries]]
 icon = ""
 text = "Update"
-actions = { "update" = "ghostty --class=local.floating -e installupdates" }
+actions = { "update" = "ghostty --class=local.floating -e update-perform" }
 
 [[entries]]
 icon = "󰣇"

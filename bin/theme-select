@@ -10,7 +10,7 @@ if [[ -z "$themes" ]]; then
 fi
 
 # Show in walker dmenu (suppress stderr to avoid capturing error messages)
-selected=$(echo "$themes" | walker --dmenu --theme menus --width 195 --minheight 1 --maxheight 600 -p "Theme…" 2>/dev/null)
+selected=$(echo "$themes" | walker --dmenu --theme menus --width 295 --minheight 1 --maxheight 600 -p "Theme…" 2>/dev/null)
 
 # Check if cancelled or empty
 if [[ "$selected" == "CNCLD" || -z "$selected" ]]; then

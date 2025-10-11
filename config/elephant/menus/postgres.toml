@@ -6,15 +6,15 @@ icon = ""
 
 [[entries]]
 icon = ""
-text = "Setup"
+text = "Setup postgres"
 actions = { "postgres-setup" = "ghostty --class=local.floating -e postgres-setup" }
 
 [[entries]]
 icon = ""
-text = "Restore"
-actions = { "postgres-restore-db" = "ghostty --class=local.floating -e pkg-restore-db" }
+text = "Restore database"
+actions = { "postgres-restore-db" = "ghostty --class=local.floating -e postgres-restore-db" }
 
 [[entries]]
 icon = ""
-text = "Backup"
+text = "Backup database"
 actions = { "postgres-backup" = "ghostty --class=local.floating -e postgres-backup" }

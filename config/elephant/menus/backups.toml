@@ -6,10 +6,10 @@ icon = ""
 
 [[entries]]
 icon = ""
-text = "Setup"
-actions = { "backup-files" = "ghostty --class=local.floating -e postgres-files" }
+text = "Archive files"
+actions = { "backup-files" = "ghostty --class=local.floating -e backup-files" }
 
 [[entries]]
 icon = ""
-text = "Restore"
+text = "Unpack archive"
 actions = { "backup-restore" = "ghostty --class=local.floating -e backup-restore" }

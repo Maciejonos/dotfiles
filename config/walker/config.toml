@@ -50,6 +50,9 @@ provider = "todo"
 prefix = "="
 provider = "calc"
 
+[providers.actions]
+dmenu = [{ action = "select", default = true, bind = "Return" }]
+
 providerlist = [
   { action = "activate", default = true, bind = "Return", after = "ClearReload" },
 ]
@@ -90,6 +93,56 @@ clipboard = [
   { action = "remove_all", global = true, label = "clear", bind = "ctrl shift d", after = "ClearReload" },
   { action = "toggle_images", global = true, label = "toggle images", bind = "ctrl i", after = "ClearReload" },
   { action = "edit", bind = "ctrl o" },
+]
+
+"menus:screenshots" = [
+  { action = "area_clipboard", bind = "Return" },
+  { action = "area_file", bind = "Return" },
+  { action = "window_clipboard", bind = "Return" },
+  { action = "window_file", bind = "Return" },
+  { action = "fullscreen_clipboard", bind = "Return" },
+  { action = "fullscreen_file", bind = "Return" },
+]
+
+"menus:system" = [
+  { action = "lock", bind = "Return" },
+  { action = "suspend", bind = "Return" },
+  { action = "relaunch", bind = "Return" },
+  { action = "restart", bind = "Return" },
+  { action = "shutdown", bind = "Return" },
+]
+
+"menus:setup" = [
+  { action = "postgres", bind = "Return" },
+  { action = "backups", bind = "Return" },
+]
+
+"menus:postgres" = [
+  { action = "postgres-setup", bind = "Return" },
+  { action = "postgres-restore-db", bind = "Return" },
+  { action = "postgres-backup", bind = "Return" },
+]
+
+"menus:capture" = [
+  { action = "screenshot", bind = "Return" },
+  { action = "record", bind = "Return" },
+]
+
+"menus:backups" = [
+  { action = "backup-files", bind = "Return" },
+  { action = "backup-restore", bind = "Return" },
+]
+
+"menus:menu" = [
+  { action = "update", bind = "Return" },
+  { action = "pkg-install", bind = "Return" },
+  { action = "pkg-install-aur", bind = "Return" },
+  { action = "pkg-remove", bind = "Return" },
+  { action = "change-theme", bind = "Return" },
+  { action = "capture", bind = "Return" },
+  { action = "setup", bind = "Return" },
+  { action = "keybindings", bind = "Return" },
+  { action = "system", bind = "Return" },
 ]
 
 
