@@ -1,5 +1,7 @@
 # Dotfiles Setup for Hyprland on Arch Linux
 
+<img width="2561" height="1441" alt="1760196581" src="https://github.com/user-attachments/assets/7e4f6b59-a7cd-4dab-b66b-86d91df011a1" />
+
 ### Install with  curl -fsSL https://raw.githubusercontent.com/Maciejonos/dotfiles/master/setup.sh | bash
 #### This is meant specifically for Arch Linux with hyprland already installed, and won't work on other systems.
 
