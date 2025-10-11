@@ -91,7 +91,6 @@ localsend-bin
 mpv
 
 # Elephant Suite
-elephant-archlinuxpkgs
 elephant-calc
 elephant-clipboard
 elephant-files
