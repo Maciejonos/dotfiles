@@ -23,16 +23,21 @@ _isInstalled() {
 
 _installParu() {
     if [[ ! $(_isInstalled "base-devel") == 0 ]]; then
-        spinner "Installing base-devel..." sudo pacman --noconfirm -S base-devel
+        log_info "Installing base-devel..."
+        sudo pacman --noconfirm -S base-devel
+        log_success "base-devel installed"
     fi
     if [[ ! $(_isInstalled "git") == 0 ]]; then
-        spinner "Installing git..." sudo pacman --noconfirm -S git
+        log_info "Installing git..."
+        sudo pacman --noconfirm -S git
+        log_success "git installed"
     fi
 
     log_info "Cloning paru from AUR..."
     git clone https://aur.archlinux.org/paru.git /tmp/paru
     cd /tmp/paru
-    spinner "Building paru..." makepkg -si --noconfirm
+    log_info "Building and installing paru (this may take a moment)..."
+    makepkg -si --noconfirm
     cd ~
     rm -rf /tmp/paru
     log_success "Paru installed successfully"

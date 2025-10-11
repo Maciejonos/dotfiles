@@ -115,8 +115,8 @@ fi
 # Configure git user
 log_info "Configuring git user information..."
 
-CURRENT_GIT_NAME=$(git config --global user.name 2>/dev/null)
-CURRENT_GIT_EMAIL=$(git config --global user.email 2>/dev/null)
+CURRENT_GIT_NAME=$(git config --global user.name 2>/dev/null || true)
+CURRENT_GIT_EMAIL=$(git config --global user.email 2>/dev/null || true)
 
 if [ -n "$CURRENT_GIT_NAME" ] && [ -n "$CURRENT_GIT_EMAIL" ]; then
     log_detail "Git already configured:"
@@ -131,7 +131,7 @@ fi
 
 if [ -z "$CURRENT_GIT_NAME" ]; then
     if _has_gum; then
-        GIT_NAME=$(gum input --placeholder "Enter your name (used for git)")
+        GIT_NAME=$(gum input --placeholder "Enter your name (used for git)" || true)
     else
         read -p "Enter your name: " GIT_NAME
     fi
@@ -144,7 +144,7 @@ fi
 
 if [ -z "$CURRENT_GIT_EMAIL" ]; then
     if _has_gum; then
-        GIT_EMAIL=$(gum input --placeholder "Enter your email (used for git)")
+        GIT_EMAIL=$(gum input --placeholder "Enter your email (used for git)" || true)
     else
         read -p "Enter your email: " GIT_EMAIL
     fi
