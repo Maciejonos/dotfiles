@@ -69,7 +69,7 @@
 
   // Bluetooth
   "bluetooth": {
-    "format": "",
+    "format": "",
     "format-disabled": "󰂲",
     "format-connected": "",
     "tooltip-format": "Devices connected: {num_connections}",

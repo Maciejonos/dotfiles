@@ -47,7 +47,7 @@
 }
 
 #custom-hypridle.notactive {
-    color: @error;
+    color: rgb(224, 137, 137);
 } 
 
 
