@@ -4,17 +4,17 @@ source "$HOME/.config/dotfiles/bin/lib/helpers.sh"
 DOTFILES_DIR="$HOME/.config/dotfiles"
 
 # Fetch remote changes
-git -C "$DOTFILES_DIR" fetch origin --quiet
+git --no-pager -C "$DOTFILES_DIR" fetch origin --quiet
 
 # Get current local commit
-local_commit=$(git -C "$DOTFILES_DIR" rev-parse HEAD)
+local_commit=$(git --no-pager -C "$DOTFILES_DIR" rev-parse HEAD)
 if [[ -z "$local_commit" ]]; then
   log_error "Could not retrieve local commit"
   exit 1
 fi
 
 # Get remote commit
-remote_commit=$(git -C "$DOTFILES_DIR" rev-parse origin/$(git -C "$DOTFILES_DIR" branch --show-current))
+remote_commit=$(git --no-pager -C "$DOTFILES_DIR" rev-parse origin/$(git --no-pager -C "$DOTFILES_DIR" branch --show-current))
 if [[ -z "$remote_commit" ]]; then
   log_error "Could not retrieve remote commit"
   exit 1
@@ -30,8 +30,8 @@ if [[ "$local_commit" != "$remote_commit" ]]; then
   log_info "Pulling changes..."
 
   # Pull with autostash, then check for conflicts
-  git -C "$DOTFILES_DIR" pull --autostash
-  git -C "$DOTFILES_DIR" diff --check || git -C "$DOTFILES_DIR" reset --merge
+  git --no-pager -C "$DOTFILES_DIR" pull --autostash
+  git --no-pager -C "$DOTFILES_DIR" diff --check || git --no-pager -C "$DOTFILES_DIR" reset --merge
 
   exit 0
 else
