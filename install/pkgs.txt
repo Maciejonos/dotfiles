@@ -42,12 +42,13 @@ mako
 walker
 swayosd
 swaybg
-waypaper
 grim
 slurp
 satty
 zenity
 uwsm
+python-pywal
+gjs
 
 # Audio
 pamixer
@@ -74,17 +75,13 @@ flatpak
 plocate
 pacman-contrib
 
-# Fonts & icons
+# Fonts, themes & icons
 ttf-cascadia-mono-nerd
-ttf-dejavu
 noto-fonts
 noto-fonts-emoji
 otf-font-awesome
 yaru-icon-theme
-
-# Themes & Icons
 bibata-cursor-theme
-kora-icon-theme
 gnome-themes-extra
 
 # Applications

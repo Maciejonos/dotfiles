@@ -1,6 +1,5 @@
 name = "backups"
 name_pretty = "Backups"
-global_search = true
 fixed_order = true
 icon = ""
 

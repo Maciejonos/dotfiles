@@ -1,6 +1,5 @@
 name = "screenshots"
 name_pretty = "Screenshots"
-global_search = true
 fixed_order = true
 icon = ""
 

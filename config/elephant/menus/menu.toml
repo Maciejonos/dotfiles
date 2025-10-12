@@ -1,6 +1,5 @@
 name = "menu"
 name_pretty = "Menu"
-global_search = true
 fixed_order = true
 icon = ""
 

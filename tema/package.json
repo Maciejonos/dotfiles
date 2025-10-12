@@ -1,0 +1,24 @@
+{
+  "name": "tema",
+  "version": "1.0.0",
+  "description": "Omarchy theming with pywal integration",
+  "type": "module",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "gjs -m src/main.js",
+    "dev": "gjs -m src/main.js",
+    "format": "prettier --write \"src/**/*.js\"",
+    "format:check": "prettier --check \"src/**/*.js\""
+  },
+  "keywords": [
+    "gtk",
+    "libadwaita",
+    "wallpaper",
+    "theming"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^3.6.2"
+  }
+}

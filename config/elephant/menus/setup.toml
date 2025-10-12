@@ -1,6 +1,5 @@
 name = "setup"
 name_pretty = "Setup"
-global_search = true
 fixed_order = true
 icon = "󰉉"
 

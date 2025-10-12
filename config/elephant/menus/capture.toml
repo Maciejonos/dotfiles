@@ -1,6 +1,5 @@
 name = "capture"
 name_pretty = "Capture"
-global_search = true
 fixed_order = true
 icon = ""
 

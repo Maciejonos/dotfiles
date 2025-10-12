@@ -1,6 +1,5 @@
 name = "system"
 name_pretty = "System"
-global_search = true
 fixed_order = true
 icon = ""
 

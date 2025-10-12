@@ -1,0 +1,23 @@
+# Dynamic theme colors
+config-file = ?"~/.config/dotfiles/current/theme/ghostty.conf"
+
+# Font
+font-family = "CaskaydiaMono Nerd Font"
+font-style = Regular
+font-size = 12
+
+# Window
+window-padding-x = 8
+window-padding-y = 10
+background-opacity = 0.8
+confirm-close-surface=false
+resize-overlay = never
+mouse-hide-while-typing = true
+
+# Cursor styling
+cursor-style = "block"
+cursor-style-blink = false
+shell-integration-features = no-cursor
+
+# Keyboard bindings
+keybind = f11=toggle_fullscreen

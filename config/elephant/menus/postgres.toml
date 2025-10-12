@@ -1,6 +1,5 @@
 name = "postgres"
 name_pretty = "Postgres"
-global_search = true
 fixed_order = true
 icon = ""
 
