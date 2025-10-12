@@ -2,7 +2,7 @@
 
 
 * {
-  background-color: @background;
+  background-color: transparent;
   color: @foreground;
 
   border: none;
@@ -12,6 +12,10 @@
   font-size: 16px;
 }
 
+window#waybar {
+    background-color: alpha(@background, 0.95);
+}
+
 .modules-left {
     margin: 8px 0px 8px 10px;
 }
@@ -19,6 +23,7 @@
 .modules-right {
     margin: 8px 10px 8px 0px;
 }
+
 
 #workspaces button {
   all: initial;
@@ -48,7 +53,5 @@
 
 #custom-hypridle.notactive {
     color: rgb(224, 137, 137);
-} 
-
-
+}
 

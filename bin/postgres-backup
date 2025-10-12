@@ -5,7 +5,7 @@ set -e
 log_header "PostgreSQL Backup"
 
 log_step "Fetching PostgreSQL databases..."
-databases=$(psql -U postgres -t -c "SELECT datname FROM pg_database WHERE datistemplate = false AND datname NOT IN ('postgres');" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | grep -v '^$')
+databases=$(psql -t -c "SELECT datname FROM pg_database WHERE datistemplate = false AND datname NOT IN ('postgres');" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | grep -v '^$')
 
 if ! command -v fzf &>/dev/null; then
   log_error "fzf is not installed"
@@ -33,7 +33,7 @@ echo "$selected_dbs" | while read -r db; do
   backup_file="$backup_dir/${db}_${timestamp}.backup"
   log_info "Backing up: $db"
 
-  pg_dump -U postgres -Fc "$db" | pv >"$backup_file"
+  pg_dump -Fc "$db" | pv >"$backup_file"
 
   log_success "$db backed up"
   log_detail "$backup_file"

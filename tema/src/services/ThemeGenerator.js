@@ -135,18 +135,16 @@ export class ThemeGenerator {
 
     processTemplates(templatesDir, temaThemeDir, colors) {
         const templateMappings = [
-            ['alacritty.toml', temaThemeDir + '/alacritty.toml'],
-            ['kitty.conf', temaThemeDir + '/kitty.conf'],
             ['waybar.css', temaThemeDir + '/waybar.css'],
             ['hyprland.conf', temaThemeDir + '/hyprland.conf'],
             ['mako.ini', temaThemeDir + '/mako.ini'],
             ['ghostty.conf', temaThemeDir + '/ghostty.conf'],
-            ['wofi.css', temaThemeDir + '/wofi.css'],
             ['btop.theme', temaThemeDir + '/btop.theme'],
             ['swayosd.css', temaThemeDir + '/swayosd.css'],
             ['walker.css', temaThemeDir + '/walker.css'],
             ['hyprlock.conf', temaThemeDir + '/hyprlock.conf'],
             ['chromium.theme', temaThemeDir + '/chromium.theme'],
+            ['gtk.css', temaThemeDir + '/gtk.css']
         ];
 
         for (const [templateName, temaOutput] of templateMappings) {

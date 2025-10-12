@@ -34,6 +34,7 @@ hyprlock
 xdg-desktop-portal-hyprland
 hyprsunset
 hyprcursor
+hyprshot
 
 # Wayland Tools & UI
 waybar

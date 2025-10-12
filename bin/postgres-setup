@@ -39,6 +39,15 @@ else
   log_error "Could not connect to PostgreSQL"
 fi
 
+# Create user role
+log_step "Creating PostgreSQL role for $USER..."
+if sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='$USER'" | grep -q 1; then
+  log_info "Role '$USER' already exists"
+else
+  sudo -u postgres createuser -s "$USER"
+  log_success "Role '$USER' created with superuser privileges"
+fi
+
 # Install Beekeeper Studio
 log_step "Installing Beekeeper Studio..."
 if ! command -v paru &>/dev/null; then

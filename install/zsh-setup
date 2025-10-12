@@ -10,7 +10,7 @@ ZSH_PATH=/usr/bin/zsh
 CURRENT_SHELL=$(getent passwd $USER | cut -d: -f7)
 
 if [ "$CURRENT_SHELL" != "$ZSH_PATH" ]; then
-    chsh -s "$ZSH_PATH"
+    sudo chsh -s "$ZSH_PATH" "$USER"
     log_success "Default shell changed to zsh"
     log_info "Note: You need to log out and back in for shell change to take effect"
 else

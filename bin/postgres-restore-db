@@ -15,7 +15,7 @@ fi
 
 log_step "Finding backup files..."
 # Find all backup files (max depth 3, exclude hidden directories)
-backup_files=$(find "$backup_dir" -maxdepth 3 -not -path '*/.*' -name "*.backup" -type f -printf "%f\n" | sort -r)
+backup_files=$(find "$backup_dir" -maxdepth 3 -not -path '*/.*' -name "*.backup" -type f -printf "%P\n" | sort -r)
 
 if [ -z "$backup_files" ]; then
   log_info "No .backup files found in $backup_dir"
@@ -35,7 +35,8 @@ fi
 backup_file="$backup_dir/$selected_backup"
 
 # Extract database name from filename (format: dbname_YYYY-MM-DD_HHMM.backup)
-db_name=$(echo "$selected_backup" | sed 's/_[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}_[0-9]\{4\}\.backup$//')
+# Get just the filename without directory path, then strip timestamp
+db_name=$(basename "$selected_backup" | sed 's/_[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}_[0-9]\{4\}\.backup$//')
 
 log_step "Restore Details"
 log_detail "Backup file: $selected_backup"
@@ -43,7 +44,7 @@ log_detail "Database name: $db_name"
 echo
 
 # Check if database already exists
-if psql -U postgres -lqt | cut -d \| -f 1 | grep -qw "$db_name"; then
+if psql -lqt | cut -d \| -f 1 | grep -qw "$db_name"; then
   log_error "Database '$db_name' already exists!"
   echo ""
   echo "Options:"
@@ -62,7 +63,7 @@ if psql -U postgres -lqt | cut -d \| -f 1 | grep -qw "$db_name"; then
       exit 0
     fi
     log_step "Dropping database '$db_name'..."
-    dropdb -U postgres "$db_name"
+    dropdb "$db_name"
     ;;
   2)
     echo ""
@@ -85,11 +86,11 @@ fi
 
 # Create database
 log_step "Creating database '$db_name'..."
-createdb -U postgres "$db_name"
+createdb "$db_name"
 
 # Restore backup
 log_step "Restoring backup..."
-pg_restore -U postgres -d "$db_name" -v "$backup_file"
+pg_restore -d "$db_name" -v "$backup_file"
 
 log_success "Database restored: $db_name"
 show_done

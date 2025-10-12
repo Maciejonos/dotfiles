@@ -82,7 +82,6 @@ sudo systemctl enable ufw
 log_success "UFW configured and enabled"
 
 # Detect and configure NVIDIA if present
-log_step "Checking for NVIDIA GPU"
 if lspci | grep -i nvidia &>/dev/null; then
   log_info "NVIDIA GPU detected, configuring for Hyprland..."
   bash "$SCRIPT_DIR/nvidia-setup"
@@ -136,5 +135,9 @@ log_info "Configuring chromium policy..."
 sudo mkdir -p /etc/chromium/policies/managed
 sudo chown -R $USER:$USER /etc/chromium/policies
 sudo chmod -R 755 /etc/chromium/policies
+
+# Remove wait on network from system startup
+log_info "Disabling systemd-networkd-wait-online.service..."
+sudo systemctl disable systemd-networkd-wait-online.service
 
 log_success "System configuration complete!"
