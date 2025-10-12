@@ -5,7 +5,7 @@ config/gtk-3.0/bookmarks
 config/gtk-3.0/settings.ini
 config/gtk-4.0/settings.ini
 config/waybar/quicklinks.json
-config/waybar/config.json
+config/waybar/config
 current/theme
 current/background
 config/.zshrc
