@@ -89,6 +89,9 @@ bash "$SCRIPT_DIR/flatpak"
 log_step "Installing zsh plugins"
 bash "$SCRIPT_DIR/zsh-setup"
 
+log_step "Setting up LazyVim"
+bash "$SCRIPT_DIR/lazyvim-setup"
+
 log_step "Creating symlinks"
 bash "$SCRIPT_DIR/symlinks"
 
