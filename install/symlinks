@@ -74,9 +74,9 @@ ln -snf "$DOTFILES_DIR/current/theme/mako.ini" "$HOME/.config/mako/config"
 ln -snf "$DOTFILES_DIR/current/theme/eza.yml" "$HOME/.config/eza/theme.yml"
 
 mkdir -p "$DOTFILES_DIR/themes/matugen"
-mkdir -p "$DOTFILES_DIR/themes/tema"
+mkdir -p "$DOTFILES_DIR/themes/pywal"
 ln -snf "$DOTFILES_DIR/themes/backgrounds" "$DOTFILES_DIR/themes/matugen" 
-ln -snf "$DOTFILES_DIR/themes/backgrounds" "$DOTFILES_DIR/themes/tema"
+ln -snf "$DOTFILES_DIR/themes/backgrounds" "$DOTFILES_DIR/themes/pywal"
 ln -snf "$DOTFILES_DIR/themes/backgrounds" "$HOME/Pictures"
 
 gsettings set org.gnome.desktop.interface icon-theme "Yaru-sage"

@@ -1,5 +1,0 @@
-#!/bin/bash
-# Resolve symlink to actual script location
-SCRIPT_PATH="$(readlink -f "$0")"
-cd "$(dirname "$SCRIPT_PATH")" || exit
-exec gjs -m src/main.js "$@"

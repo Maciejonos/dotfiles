@@ -9,5 +9,5 @@ config/waybar/config
 current/theme
 current/background
 config/.zshrc
-themes/tema
+themes/pywal
 themes/matugen

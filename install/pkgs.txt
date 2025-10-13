@@ -49,6 +49,8 @@ zenity
 uwsm
 python-pywal
 gjs
+waypaper
+matugen-bin
 
 # Audio
 pamixer
