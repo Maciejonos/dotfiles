@@ -73,6 +73,12 @@ ln -snf "$DOTFILES_DIR/current/theme/btop.theme" "$HOME/.config/btop/themes/curr
 ln -snf "$DOTFILES_DIR/current/theme/mako.ini" "$HOME/.config/mako/config"
 ln -snf "$DOTFILES_DIR/current/theme/eza.yml" "$HOME/.config/eza/theme.yml"
 
+mkdir -p "$DOTFILES_DIR/themes/matugen"
+mkdir -p "$DOTFILES_DIR/themes/tema"
+ln -snf "$DOTFILES_DIR/themes/backgrounds" "$DOTFILES_DIR/themes/matugen" 
+ln -snf "$DOTFILES_DIR/themes/backgrounds" "$DOTFILES_DIR/themes/tema"
+ln -snf "$DOTFILES_DIR/themes/backgrounds" "$HOME/Pictures"
+
 gsettings set org.gnome.desktop.interface icon-theme "Yaru-sage"
 gsettings set org.gnome.desktop.interface font-name 'CaskaydiaMono Nerd Font Mono 11'
 gsettings set org.gnome.desktop.interface monospace-font-name 'CaskaydiaMono Nerd Font Mono 11'
