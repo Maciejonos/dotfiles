@@ -13,7 +13,7 @@
 }
 
 window#waybar {
-    background-color: alpha(@background, 0.95);
+    background-color: alpha(@background, 0.9);
 }
 
 .modules-left {

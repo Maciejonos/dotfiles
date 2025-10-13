@@ -1,1 +1,0 @@
-/home/maciej/.config/dotfiles/current/theme/neovim.lua

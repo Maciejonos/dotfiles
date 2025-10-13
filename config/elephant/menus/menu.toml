@@ -29,6 +29,11 @@ text = "Change theme"
 actions = { "change-theme" = "theme-select" }
 
 [[entries]]
+icon = ""
+text = "Next wallpaper"
+actions = { "next-wallpaper" = "theme-bg-next" }
+
+[[entries]]
 icon = ""
 text = "Capture"
 actions = { "capture" = "walker --theme menus -m menus:capture --width 295 --minheight 1 --maxheight 600" }

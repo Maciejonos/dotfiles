@@ -47,7 +47,10 @@ prefix = "="
 provider = "calc"
 
 [providers.actions]
-dmenu = [{ action = "select", default = true, bind = "Return" }]
+dmenu = [
+ { action = "select", default = true, bind = "Return" },
+ { action = "provider:menus:menu", bind = "ctrl x", global = true, after = "ClearReload" },
+]
 
 providerlist = [
   { action = "activate", default = true, bind = "Return", after = "ClearReload" },
@@ -93,6 +96,7 @@ clipboard = [
   { action = "window_file", bind = "Return" },
   { action = "fullscreen_clipboard", bind = "Return" },
   { action = "fullscreen_file", bind = "Return" },
+  { action = "provider:menus:capture", bind = "ctrl x", global = true, after = "ClearReload" },
 ]
 
 "menus:system" = [
@@ -101,27 +105,32 @@ clipboard = [
   { action = "relaunch", bind = "Return" },
   { action = "restart", bind = "Return" },
   { action = "shutdown", bind = "Return" },
+  { action = "provider:menus:menu", bind = "ctrl x", global = true, after = "ClearReload" },
 ]
 
 "menus:setup" = [
   { action = "postgres", bind = "Return" },
   { action = "backups", bind = "Return" },
+  { action = "provider:menus:menu", bind = "ctrl x", global = true, after = "ClearReload" },
 ]
 
 "menus:postgres" = [
   { action = "postgres-setup", bind = "Return" },
   { action = "postgres-restore-db", bind = "Return" },
   { action = "postgres-backup", bind = "Return" },
+  { action = "provider:menus:setup", bind = "ctrl x", global = true, after = "ClearReload" },
 ]
 
 "menus:capture" = [
   { action = "screenshot", bind = "Return" },
   { action = "record", bind = "Return" },
+  { action = "provider:menus:menu", bind = "ctrl x", global = true, after = "ClearReload" },
 ]
 
 "menus:backups" = [
   { action = "backup-files", bind = "Return" },
   { action = "backup-restore", bind = "Return" },
+  { action = "provider:menus:setup", bind = "ctrl x", global = true, after = "ClearReload" },
 ]
 
 "menus:menu" = [
@@ -135,5 +144,3 @@ clipboard = [
   { action = "keybindings", bind = "Return" },
   { action = "system", bind = "Return" },
 ]
-
-
