@@ -214,6 +214,18 @@ main() {
     if command -v matugen &> /dev/null; then
         matugen image "$WALLPAPER" -m "dark"
         echo "✓ Matugen colors generated"
+
+        # Generate icon theme from matugen colors
+        echo "Generating icon theme from matugen..."
+        local matugen_json=$(matugen image "$WALLPAPER" -m "dark" --dry-run -j hex 2>&1)
+        local accent_color=$(echo "$matugen_json" | jq -r '.colors.dark.primary')
+        local hue=$(hex_to_hsl "$accent_color")
+        local yaru_theme=$(hue_to_yaru_theme "$hue")
+
+        local matugen_output_dir="$CONFIG_BASE/themes/matugen"
+        mkdir -p "$matugen_output_dir"
+        echo "$yaru_theme" > "$matugen_output_dir/icons.theme"
+        echo "✓ Generated matugen icons.theme: $yaru_theme (hue: ${hue}°)"
     else
         echo "Warning: matugen not found, skipping"
     fi

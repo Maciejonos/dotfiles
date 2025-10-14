@@ -36,5 +36,9 @@ output_path = '~/.config/dotfiles/themes/matugen/gtk.css'
 input_path = '~/.config/matugen/templates/walker.css'
 output_path = '~/.config/dotfiles/themes/matugen/walker.css'
 
+[templates.chromium]
+input_path = '~/.config/matugen/templates/chromium.theme.tmpl'
+output_path = '~/.config/dotfiles/themes/matugen/chromium.theme'
+
 
 
