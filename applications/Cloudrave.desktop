@@ -1,9 +1,0 @@
-[Desktop Entry]
-Version=1.0
-Name=Cloudrave
-Comment=Cloudrave
-Exec=~/.local/bin/launch-webapp https://cloudreve.mcfreaky15.com
-Terminal=false
-Type=Application
-Icon=/home/maciej/.local/share/applications/icons/Cloudrave.png
-StartupNotify=true

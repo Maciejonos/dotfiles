@@ -54,4 +54,12 @@ window#waybar {
 #custom-hypridle.notactive {
     color: rgb(224, 137, 137);
 }
+tooltip {
+    background-color: alpha(@background, 0.9);
+    padding:20px;
+    margin:0px;
+}
 
+tooltip label {
+    color: @foreground;
+}
