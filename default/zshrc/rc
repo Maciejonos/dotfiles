@@ -1,0 +1,4 @@
+source ~/.local/share/dotfiles/default/zshrc/envs
+source ~/.local/share/dotfiles/default/zshrc/init
+source ~/.local/share/dotfiles/default/zshrc/aliases
+source ~/.local/share/dotfiles/default/zshrc/functions

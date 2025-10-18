@@ -3,17 +3,13 @@
 <img width="2561" height="1441" alt="1760196581" src="https://github.com/user-attachments/assets/7e4f6b59-a7cd-4dab-b66b-86d91df011a1" />
 
 ## Installation
-### curl-fsSL https://raw.githubusercontent.com/Maciejonos/dotfiles/master/setup.sh | bash
+#### curl-fsSL https://raw.githubusercontent.com/Maciejonos/dotfiles/master/setup.sh | bash
 #### This is meant specifically for Arch Linux with hyprland already installed, and won't work on other systems.
 
-
-
-### Important note
+## Important note
 I've taken a lot of configs (like the full theming system) and scripts from Omarchy, some are modified, some are almost the same, and some I added on my own. By no means am I saying that I created all of this myself.
 
 Omarchy is awesome, but I wanted to have something that I can easily modify myself, on just pure Arch, without installing a whole distro. Either way, if you somehow haven't heard of it, you should check it out! https://omarchy.org/
-
-
 
 ## Features
 

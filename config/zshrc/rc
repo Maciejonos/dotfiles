@@ -1,4 +1,0 @@
-source ~/.config/zshrc/envs
-source ~/.config/zshrc/init
-source ~/.config/zshrc/aliases
-source ~/.config/zshrc/functions

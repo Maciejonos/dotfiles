@@ -6,7 +6,7 @@ if [[ -z $1 && $1 != "CNCLD" ]]; then
   exit 1
 fi
 
-THEMES_DIR="$HOME/.local/share/dotfiles/themes/"
+THEMES_DIR="$HOME/.local/share/dotfiles/themes"
 CURRENT_THEME_DIR="$HOME/.local/share/dotfiles/current/theme"
 
 THEME_NAME=$(echo "$1" | sed -E 's/<[^>]+>//g' | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
