@@ -1,5 +1,5 @@
 #!/bin/bash
-source "$HOME/.config/dotfiles/bin/lib/helpers.sh"
+source "$HOME/.local/share/dotfiles/bin/lib/helpers.sh"
 set -e
 
 log_header "PostgreSQL Restore"
@@ -14,7 +14,6 @@ if ! command -v fzf &>/dev/null; then
 fi
 
 log_step "Finding backup files..."
-# Find all backup files (max depth 3, exclude hidden directories)
 backup_files=$(find "$backup_dir" -maxdepth 3 -not -path '*/.*' -name "*.backup" -type f -printf "%P\n" | sort -r)
 
 if [ -z "$backup_files" ]; then
@@ -24,7 +23,6 @@ if [ -z "$backup_files" ]; then
   exit 0
 fi
 
-# Select backup file with fzf
 selected_backup=$(echo "$backup_files" | fzf --prompt="Select backup to restore: " --height=40% --border)
 
 if [ -z "$selected_backup" ]; then
@@ -34,8 +32,6 @@ fi
 
 backup_file="$backup_dir/$selected_backup"
 
-# Extract database name from filename (format: dbname_YYYY-MM-DD_HHMM.backup)
-# Get just the filename without directory path, then strip timestamp
 db_name=$(basename "$selected_backup" | sed 's/_[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}_[0-9]\{4\}\.backup$//')
 
 log_step "Restore Details"

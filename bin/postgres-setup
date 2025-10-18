@@ -1,5 +1,5 @@
 #!/bin/bash
-source "$HOME/.config/dotfiles/bin/lib/helpers.sh"
+source "$HOME/.local/share/dotfiles/bin/lib/helpers.sh"
 set -e
 
 log_header "PostgreSQL Setup"

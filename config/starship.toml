@@ -11,9 +11,13 @@ truncation_length = 5
 truncation_symbol = "…/"
 repo_root_style = "bold cyan"
 repo_root_format = "[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style) "
+read_only = " 󰌾"
+
+[docker_context]
+symbol = " "
 
 [git_branch]
-format = "[$branch]($style) "
+format = " [$branch]($style) "
 style = "italic cyan"
 
 [git_status]
@@ -30,3 +34,20 @@ stashed    = ""
 staged     = ""
 renamed    = ""
 deleted    = ""
+
+[git_commit]
+tag_symbol = '  '
+
+[nodejs]
+symbol = " "
+
+Arch = " "
+
+[package]
+symbol = "󰏗 "
+
+[python]
+symbol = " "
+
+[rust]
+symbol = "󱘗 "

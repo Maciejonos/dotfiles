@@ -1,9 +1,0 @@
-[Desktop Entry]
-Version=1.0
-Name=OpenWeb UI
-Comment=OpenWeb UI
-Exec=~/.local/bin/launch-webapp http://localhost:8080/
-Terminal=false
-Type=Application
-Icon=/home/maciej/.local/share/applications/icons/OpenWeb UI.png
-StartupNotify=true

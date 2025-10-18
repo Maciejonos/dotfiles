@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HELPER="${HELPER:-$HOME/.local/bin/ddc-brightness}"
+HELPER="ddc-brightness"
 
 # Get current brightness
 cur=$($HELPER get 2>/dev/null || echo 50)

@@ -3,7 +3,7 @@
 WALLPAPER="$1"
 CACHE_DIR="$HOME/.cache/wal"
 COLORS_JSON="$CACHE_DIR/colors.json"
-CONFIG_BASE="$HOME/.config/dotfiles"
+CONFIG_BASE="$HOME/.local/share/dotfiles"
 TEMPLATES_DIR="$CONFIG_BASE/config/wal/templates"
 OUTPUT_DIR="$CONFIG_BASE/themes/pywal"
 
@@ -11,12 +11,10 @@ OUTPUT_DIR="$CONFIG_BASE/themes/pywal"
 # Color Conversion Functions
 # ============================================================================
 
-# Remove # from hex color
 strip_hash() {
     echo "${1#\#}"
 }
 
-# Convert hex to space-separated RGB values (e.g., "#aabbcc" -> "170 187 204")
 hex_to_rgb() {
     local hex=$(strip_hash "$1")
     local r=$((16#${hex:0:2}))
@@ -25,47 +23,55 @@ hex_to_rgb() {
     echo "$r $g $b"
 }
 
-# Convert RGB to HSL and return hue (0-360)
-# Based on: https://en.wikipedia.org/wiki/HSL_and_HSV
 hex_to_hsl() {
     local hex=$(strip_hash "$1")
     local r=$((16#${hex:0:2}))
     local g=$((16#${hex:2:2}))
     local b=$((16#${hex:4:2}))
 
-    # Normalize to 0-1 range
-    local r_norm=$(echo "scale=6; $r / 255" | bc -l)
-    local g_norm=$(echo "scale=6; $g / 255" | bc -l)
-    local b_norm=$(echo "scale=6; $b / 255" | bc -l)
+    local max=$r
+    local max_component="r"
+    if (( g > max )); then
+        max=$g
+        max_component="g"
+    fi
+    if (( b > max )); then
+        max=$b
+        max_component="b"
+    fi
 
-    # Find max and min
-    local max=$(echo "$r_norm $g_norm $b_norm" | tr ' ' '\n' | sort -rn | head -1)
-    local min=$(echo "$r_norm $g_norm $b_norm" | tr ' ' '\n' | sort -n | head -1)
-    local delta=$(echo "scale=6; $max - $min" | bc -l)
+    local min=$r
+    (( g < min )) && min=$g
+    (( b < min )) && min=$b
+
+    local delta=$((max - min))
 
     # Calculate hue
     local hue=0
-    if (( $(echo "$delta > 0" | bc -l) )); then
-        if (( $(echo "$max == $r_norm" | bc -l) )); then
-            local hue_calc=$(echo "scale=6; ($g_norm - $b_norm) / $delta" | bc -l)
-            # Adjust for negative values
-            if (( $(echo "$g_norm < $b_norm" | bc -l) )); then
+    if (( delta > 0 )); then
+        local r_norm=$(echo "scale=6; $r / 255" | bc -l)
+        local g_norm=$(echo "scale=6; $g / 255" | bc -l)
+        local b_norm=$(echo "scale=6; $b / 255" | bc -l)
+        local delta_norm=$(echo "scale=6; $delta / 255" | bc -l)
+
+        if [[ "$max_component" == "r" ]]; then
+            local hue_calc=$(echo "scale=6; ($g_norm - $b_norm) / $delta_norm" | bc -l)
+            if (( $(echo "$hue_calc < 0" | bc -l) )); then
                 hue_calc=$(echo "scale=6; $hue_calc + 6" | bc -l)
             fi
-            hue=$(echo "scale=0; ($hue_calc / 6) * 360" | bc)
-        elif (( $(echo "$max == $g_norm" | bc -l) )); then
-            local hue_calc=$(echo "scale=6; (($b_norm - $r_norm) / $delta) + 2" | bc -l)
-            hue=$(echo "scale=0; ($hue_calc / 6) * 360" | bc)
+            hue=$(echo "scale=6; ($hue_calc / 6) * 360" | bc | cut -d. -f1)
+        elif [[ "$max_component" == "g" ]]; then
+            local hue_calc=$(echo "scale=6; (($b_norm - $r_norm) / $delta_norm) + 2" | bc -l)
+            hue=$(echo "scale=6; ($hue_calc / 6) * 360" | bc | cut -d. -f1)
         else
-            local hue_calc=$(echo "scale=6; (($r_norm - $g_norm) / $delta) + 4" | bc -l)
-            hue=$(echo "scale=0; ($hue_calc / 6) * 360" | bc)
+            local hue_calc=$(echo "scale=6; (($r_norm - $g_norm) / $delta_norm) + 4" | bc -l)
+            hue=$(echo "scale=6; ($hue_calc / 6) * 360" | bc | cut -d. -f1)
         fi
     fi
 
     echo "$hue"
 }
 
-# Map hue to Yaru icon theme variant
 hue_to_yaru_theme() {
     local hue=$1
 
@@ -103,7 +109,6 @@ hue_to_yaru_theme() {
 # Template Processing
 # ============================================================================
 
-# Process a single template file
 process_template() {
     local template_file="$1"
     local output_file="$2"
@@ -115,12 +120,10 @@ process_template() {
 
     local content=$(cat "$template_file")
 
-    # Read colors from pywal JSON
     local background=$(jq -r '.special.background' "$COLORS_JSON")
     local foreground=$(jq -r '.special.foreground' "$COLORS_JSON")
     local cursor=$(jq -r '.special.cursor' "$COLORS_JSON")
 
-    # Replace special colors
     content="${content//\{background.strip\}/$(strip_hash "$background")}"
     content="${content//\{background.rgb\}/$(hex_to_rgb "$background")}"
     content="${content//\{background\}/$background}"
@@ -133,7 +136,6 @@ process_template() {
     content="${content//\{cursor.rgb\}/$(hex_to_rgb "$cursor")}"
     content="${content//\{cursor\}/$cursor}"
 
-    # Replace color0-color15
     for i in {0..15}; do
         local color=$(jq -r ".colors.color$i" "$COLORS_JSON")
         content="${content//\{color${i}.strip\}/$(strip_hash "$color")}"
@@ -141,7 +143,6 @@ process_template() {
         content="${content//\{color${i}\}/$color}"
     done
 
-    # Write output
     mkdir -p "$(dirname "$output_file")"
     echo "$content" > "$output_file"
     echo "✓ Generated: $output_file"
@@ -152,7 +153,6 @@ process_template() {
 # ============================================================================
 
 main() {
-    # Validate arguments
     if [[ -z "$WALLPAPER" ]]; then
         echo "Usage: theme-dynamic-set <wallpaper_path>"
         exit 1
@@ -163,7 +163,6 @@ main() {
         exit 1
     fi
 
-    # Step 1: Run pywal to extract colors
     echo "Running pywal..."
     wal -n -s -t -e -i "$WALLPAPER"
 
@@ -175,7 +174,6 @@ main() {
     echo "✓ Pywal colors extracted"
     echo
 
-    # Step 2: Process templates
     echo "Processing templates..."
     mkdir -p "$OUTPUT_DIR"
 
@@ -192,7 +190,6 @@ main() {
 
     echo
 
-    # Step 3: Copy static files
     echo "Copying static files..."
     if [[ -f "$TEMPLATES_DIR/neovim.lua" ]]; then
         cp "$TEMPLATES_DIR/neovim.lua" "$OUTPUT_DIR/neovim.lua"
@@ -200,7 +197,6 @@ main() {
     fi
     echo
 
-    # Step 4: Generate icon theme
     echo "Generating icon theme..."
     local accent_color=$(jq -r '.colors.color1' "$COLORS_JSON")
     local hue=$(hex_to_hsl "$accent_color")
@@ -209,13 +205,11 @@ main() {
     echo "✓ Generated icons.theme: $yaru_theme (hue: ${hue}°)"
     echo
 
-    # Step 5: Run matugen
     echo "Running matugen..."
     if command -v matugen &> /dev/null; then
         matugen image "$WALLPAPER" -m "dark"
         echo "✓ Matugen colors generated"
 
-        # Generate icon theme from matugen colors
         echo "Generating icon theme from matugen..."
         local matugen_json=$(matugen image "$WALLPAPER" -m "dark" --dry-run -j hex 2>&1)
         local accent_color=$(echo "$matugen_json" | jq -r '.colors.dark.primary')
@@ -231,13 +225,11 @@ main() {
     fi
     echo
 
-    # Step 6: Update background symlink
     echo "Updating background symlink..."
     ln -nsf "$WALLPAPER" "$CONFIG_BASE/current/background"
     echo "✓ Updated background symlink"
     echo
 
-    # Step 7: Reload applications
     echo "Reloading applications..."
     sleep 0.5
 
@@ -247,7 +239,6 @@ main() {
     pkill -SIGUSR2 btop
     makoctl reload
     killall -SIGUSR2 ghostty
-    theme-set-eza
     theme-set-vscode
     theme-set-gnome
     theme-set-chromium

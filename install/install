@@ -5,43 +5,41 @@ set -e
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # Ensure the dotfiles folder is in the correct location
-EXPECTED_PATH="$HOME/.config/dotfiles/install"
+EXPECTED_PATH="$HOME/.local/share/dotfiles/install"
 if [[ "$SCRIPT_DIR" != "$EXPECTED_PATH" ]]; then
     echo "ERROR: This script must be run from $EXPECTED_PATH"
     echo "Current location: $SCRIPT_DIR"
     echo ""
-    echo "Please move the dotfiles folder to ~/.config/dotfiles and try again"
+    echo "Please move the dotfiles folder to ~/.local/share/dotfiles and try again"
     exit 1
 fi
 
 # Source helpers
 source "$SCRIPT_DIR/lib/helpers.sh"
+source "$SCRIPT_DIR/lib/backup.sh"
+
+# Initialize backup session
+BACKUP_SESSION=$(init_backup_session)
+log_info "Backup session: $BACKUP_SESSION"
 
 # Ensure gum is installed first
 ensure_gum
 
-_isInstalled() {
-    package="$1"
-    check="$(sudo pacman -Qs --color always "${package}" | grep "local" | grep "${package} ")"
-    if [ -n "${check}" ]; then
-        echo 0
-        return
-    fi
-    echo 1
-    return
-}
+# Authenticate sudo early to cache credentials
+sudo -v
 
 _installParu() {
-    if [[ ! $(_isInstalled "base-devel") == 0 ]]; then
+    if ! is_installed "base-devel"; then
         log_info "Installing base-devel..."
         sudo pacman --noconfirm -S base-devel
     fi
-    if [[ ! $(_isInstalled "git") == 0 ]]; then
+    if ! is_installed "git"; then
         log_info "Installing git..."
         sudo pacman --noconfirm -S git
     fi
 
     log_info "Cloning paru from AUR..."
+    rm -rf /tmp/paru
     git clone https://aur.archlinux.org/paru.git /tmp/paru
     cd /tmp/paru
     log_info "Building and installing paru (this may take a moment)..."
@@ -60,7 +58,7 @@ _installPackages() {
 
         current=$((current + 1))
 
-        if [[ $(_isInstalled "${pkg}") == 0 ]]; then
+        if is_installed "${pkg}"; then
             log_progress "$pkg (already installed)" "$current/$total"
             continue
         fi
@@ -74,32 +72,52 @@ clear
 log_header "Dotfiles Installation"
 
 START_TIME=$(date +%s)
+TOTAL_STEPS=9
+CURRENT_STEP=0
 
-if [[ ! $(_isInstalled "paru") == 0 ]]; then
-    log_step "Installing paru AUR helper"
+if ! is_installed "paru"; then
+    CURRENT_STEP=$((CURRENT_STEP + 1))
+    log_step "[$CURRENT_STEP/$TOTAL_STEPS] Installing paru AUR helper"
     _installParu
 fi
 
-log_step "Installing packages"
+CURRENT_STEP=$((CURRENT_STEP + 1))
+log_step "[$CURRENT_STEP/$TOTAL_STEPS] Installing packages"
 _installPackages "$SCRIPT_DIR/pkgs.txt"
 
-log_step "Installing Flatpak applications"
-bash "$SCRIPT_DIR/flatpak"
+CURRENT_STEP=$((CURRENT_STEP + 1))
+log_step "[$CURRENT_STEP/$TOTAL_STEPS] Installing Flatpak applications"
+bash "$SCRIPT_DIR/setup-flatpak"
 
-log_step "Installing zsh plugins"
-bash "$SCRIPT_DIR/zsh-setup"
+CURRENT_STEP=$((CURRENT_STEP + 1))
+log_step "[$CURRENT_STEP/$TOTAL_STEPS] Installing zsh plugins"
+bash "$SCRIPT_DIR/setup-zsh"
 
-log_step "Setting up LazyVim"
-bash "$SCRIPT_DIR/lazyvim-setup"
+CURRENT_STEP=$((CURRENT_STEP + 1))
+log_step "[$CURRENT_STEP/$TOTAL_STEPS] Setting up LazyVim"
+bash "$SCRIPT_DIR/setup-lazyvim"
 
-log_step "Creating symlinks"
-bash "$SCRIPT_DIR/symlinks"
+CURRENT_STEP=$((CURRENT_STEP + 1))
+log_step "[$CURRENT_STEP/$TOTAL_STEPS] Copying configuration files"
+bash "$SCRIPT_DIR/setup-config"
 
-log_step "Configuring system"
-bash "$SCRIPT_DIR/system-setup"
+CURRENT_STEP=$((CURRENT_STEP + 1))
+log_step "[$CURRENT_STEP/$TOTAL_STEPS] Hardware based setup"
+bash "$SCRIPT_DIR/setup-by-hardware"
 
-log_step "Copying template files"
-bash "$SCRIPT_DIR/copy-templates"
+CURRENT_STEP=$((CURRENT_STEP + 1))
+log_step "[$CURRENT_STEP/$TOTAL_STEPS] Creating theme symlinks"
+bash "$SCRIPT_DIR/setup-theme"
+
+CURRENT_STEP=$((CURRENT_STEP + 1))
+log_step "[$CURRENT_STEP/$TOTAL_STEPS] Copying applications to ~/.local/share/applications"
+bash "$SCRIPT_DIR/setup-applications"
+
+CURRENT_STEP=$((CURRENT_STEP + 1))
+log_step "[$CURRENT_STEP/$TOTAL_STEPS] Configuring system"
+bash "$SCRIPT_DIR/setup-system"
+
+hyprctl reload 2>/dev/null || log_detail "Hyprland not running, skipping reload"
 
 END_TIME=$(date +%s)
 TOTAL_TIME=$((END_TIME - START_TIME))
@@ -110,6 +128,16 @@ clear
 log_header "Installation Complete!"
 echo
 log_success "Installed in ${MINUTES}m ${SECONDS}s"
+echo
+
+# Load backup info from session file for display
+source "$HOME/.local/share/dotfiles/.dotfiles-backup-session"
+log_info "Backup saved to: $BACKUP_DIR"
+log_info "Restore instructions: cat $RESTORE_FILE"
+
+# Clean up session file
+rm -f "$HOME/.local/share/dotfiles/.dotfiles-backup-session"
+
 echo
 log_info "Please reboot for all changes to take effect"
 echo

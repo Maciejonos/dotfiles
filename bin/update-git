@@ -1,7 +1,7 @@
 #!/bin/bash
-source "$HOME/.config/dotfiles/bin/lib/helpers.sh"
+source "$HOME/.local/share/dotfiles/bin/lib/helpers.sh"
 
-DOTFILES_DIR="$HOME/.config/dotfiles"
+DOTFILES_DIR="$HOME/.local/share/dotfiles"
 
 # Fetch remote changes
 git --no-pager -C "$DOTFILES_DIR" fetch origin --quiet
@@ -29,7 +29,6 @@ if [[ "$local_commit" != "$remote_commit" ]]; then
   log_success "Dotfiles update available ($remote_short)"
   log_info "Pulling changes..."
 
-  # Pull with autostash, then check for conflicts
   git --no-pager -C "$DOTFILES_DIR" pull --autostash
   git --no-pager -C "$DOTFILES_DIR" diff --check || git --no-pager -C "$DOTFILES_DIR" reset --merge
 

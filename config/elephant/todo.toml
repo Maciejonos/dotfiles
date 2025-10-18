@@ -1,4 +1,4 @@
-icon = "view-list"          # GTK4 icon name for Todo provider
+icon = ""  
 min_score = 50              # minimum score to show items
 create_prefix = "add"       # prefix for creating new tasks, e.g., add:new task
 urgent_time_frame = 10      # items due within 10 minutes are marked urgent

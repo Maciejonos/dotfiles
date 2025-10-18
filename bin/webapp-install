@@ -1,5 +1,5 @@
 #!/bin/bash
-source "$HOME/.config/dotfiles/bin/lib/helpers.sh"
+source "$HOME/.local/share/dotfiles/bin/lib/helpers.sh"
 
 if [ "$#" -ne 3 ]; then
   log_header "Web App Installer"
@@ -36,7 +36,7 @@ cat >"$DESKTOP_FILE" <<EOF
 Version=1.0
 Name=$APP_NAME
 Comment=$APP_NAME
-Exec=~/.local/bin/launch-webapp $APP_URL
+Exec=~/.local/share/dotfiles/bin/launch-webapp $APP_URL
 Terminal=false
 Type=Application
 Icon=$ICON_PATH

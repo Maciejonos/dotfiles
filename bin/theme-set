@@ -1,13 +1,13 @@
 #!/bin/bash
-source "$HOME/.config/dotfiles/bin/lib/helpers.sh"
+source "$HOME/.local/share/dotfiles/bin/lib/helpers.sh"
 
 if [[ -z $1 && $1 != "CNCLD" ]]; then
   log_error "Usage: theme-set <theme-name>"
   exit 1
 fi
 
-THEMES_DIR="$HOME/.config/dotfiles/themes/"
-CURRENT_THEME_DIR="$HOME/.config/dotfiles/current/theme"
+THEMES_DIR="$HOME/.local/share/dotfiles/themes/"
+CURRENT_THEME_DIR="$HOME/.local/share/dotfiles/current/theme"
 
 THEME_NAME=$(echo "$1" | sed -E 's/<[^>]+>//g' | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
 THEME_PATH="$THEMES_DIR/$THEME_NAME"
@@ -31,7 +31,6 @@ hyprctl reload
 pkill -SIGUSR2 btop
 makoctl reload
 killall -SIGUSR2 ghostty
-theme-set-eza
 theme-set-vscode
 theme-set-gnome
 theme-set-chromium

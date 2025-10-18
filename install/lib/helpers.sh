@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Unified logging and UI helpers for dotfiles installation
-# Source this file in all install scripts: source "$(dirname "$0")/lib/helpers.sh"
-
-# Colors (fallback if gum not available)
 _GREEN='\033[0;32m'
 _BLUE='\033[0;34m'
 _YELLOW='\033[1;33m'
@@ -23,15 +19,17 @@ _has_gum() {
     command -v gum &> /dev/null
 }
 
-# Ensure gum is installed (called early in main install script)
+is_installed() {
+    pacman -Q "$1" &>/dev/null
+}
+
 ensure_gum() {
-    if ! _has_gum; then
+    if ! is_installed "gum"; then
         echo "Installing gum for better UI..."
         sudo pacman -S --noconfirm gum
     fi
 }
 
-# Display a large header section
 log_header() {
     local text="$1"
 
@@ -171,4 +169,18 @@ log_progress() {
     else
         echo -e "  ${_CYAN}[$count]${_NC} $text"
     fi
+}
+
+# Detect hardware type (laptop or desktop)
+detect_hardware_type() {
+    if ls /sys/class/power_supply/BAT* >/dev/null 2>&1 || [ -d /sys/class/power_supply/battery ]; then
+        echo "laptop"
+    else
+        echo "desktop"
+    fi
+}
+
+# Check if system has NVIDIA GPU
+has_nvidia_gpu() {
+    lspci | grep -i nvidia &>/dev/null
 }

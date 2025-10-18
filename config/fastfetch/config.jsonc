@@ -16,20 +16,6 @@
             "type": "custom"
         },
         {
-            "key": "│ {#31} user    {#keys}│",
-            "type": "title",
-            "format": "{user-name}"
-        },
-        {
-            "key": "│ {#32}󰇅 hname   {#keys}│",
-            "type": "title",
-            "format": "{host-name}"
-        },
-        {
-            "key": "│ {#33}󰅐 uptime  {#keys}│",
-            "type": "uptime"
-        },
-        {
             "key": "│ {#34}{icon} distro  {#keys}│",
             "type": "os"
         },
@@ -39,7 +25,7 @@
         },
         {
             "key": "│ {#36} wm      {#keys}│",
-            "type": "wm"
+            "type": "wm",
         },
         {
             "key": "│ {#36}󰇄 desktop {#keys}│",
@@ -56,7 +42,13 @@
         {
             "key": "│ {#33}󰍛 cpu     {#keys}│",
             "type": "cpu",
-            "showPeCoreCount": true
+            "showPeCoreCount": true,
+        },
+        {
+            "type": "gpu",
+	          "key": "│ {#35}󰢮 gpu     {#keys}│",
+	          "hideType": "integrated",
+            "format": "{1} {2}"
         },
         {
             "key": "│ {#34}󰉉 disk    {#keys}│",
@@ -66,6 +58,10 @@
         {
             "key": "│ {#36} memory  {#keys}│",
             "type": "memory"
+        },
+        {
+            "key": "│ {#33}󰅐 uptime  {#keys}│",
+            "type": "uptime"
         },
         {
             "key": "├───────────┤",

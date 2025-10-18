@@ -1,4 +1,4 @@
-icon = "edit-paste"        
+icon = "" 
 min_score = 1              
 max_items = 500
 image_editor_cmd = "satty -f %FILE% -o %FILE%"

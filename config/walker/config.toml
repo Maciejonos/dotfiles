@@ -6,6 +6,7 @@ global_argument_delimiter = "#" # query: firefox#https://benz.dev => part after 
 exact_search_prefix = "'"       # disable fuzzy searching
 theme = "dotfiles"               # theme to use
 disable_mouse = false           # disable mouse (on input and list only)
+additional_theme_location = "~/.local/share/dotfiles/default/walker/themes/"
 
 [shell]
 anchor_top = true
@@ -14,7 +15,7 @@ anchor_left = true
 anchor_right = true
 
 [placeholders]
-"default" = { input = "Search", list = "No Results" } 
+"default" = { input = "Search", list = "No Results" }
 
 [keybinds]
 close = ["Escape"]
@@ -28,7 +29,7 @@ quick_activate = []
 default = [
   "desktopapplications"
 ] # providers to be queried by default
-empty = ["desktopapplications"] 
+empty = ["desktopapplications"]
 
 [[providers.prefixes]]
 prefix = ";"

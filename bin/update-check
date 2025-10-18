@@ -10,7 +10,6 @@ _checkCommandExists() {
     return
 }
 script_name=$(basename "$0")
-# Count the instances
 instance_count=$(ps aux | grep -F "$script_name" | grep -v grep | grep -v $$ | wc -l)
 if [ $instance_count -gt 1 ]; then
     sleep $instance_count
@@ -30,18 +29,16 @@ if [[ $(_checkCommandExists "pacman") == 0 ]]; then
         done
     }
     check_lock_files
-    
-    # Check official repo updates
+
     official_updates=$(checkupdates 2>/dev/null | wc -l)
-    
-    # Check AUR updates if paru/yay is available
+
     aur_updates=0
     if command -v paru >/dev/null 2>&1; then
         aur_updates=$(paru -Qua 2>/dev/null | wc -l)
     elif command -v yay >/dev/null 2>&1; then
         aur_updates=$(yay -Qua 2>/dev/null | wc -l)
     fi
-    
+
     updates=$((official_updates + aur_updates))
 else
     updates=0

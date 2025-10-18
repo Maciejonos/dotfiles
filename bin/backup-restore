@@ -1,22 +1,18 @@
 #!/bin/bash
-source "$HOME/.config/dotfiles/bin/lib/helpers.sh"
+source "$HOME/.local/share/dotfiles/bin/lib/helpers.sh"
 set -e
 
 log_header "Restore Backups"
 
-# Configuration
 restore_dir="$HOME"
 
-# Dependency checks
 if ! command -v fzf &>/dev/null; then
   log_error "fzf is not installed. Please install it to continue."
   exit 1
 fi
 
-# Main logic
 log_step "Searching for archive files in home directory..."
 
-# Find all archive files in home directory
 archives=$(find "$HOME" -type f -mindepth 1 -maxdepth 5 \
   \( -name "*.tar.gz" -o -name "*.tgz" -o \
      -name "*.tar.bz2" -o -name "*.tbz" -o -name "*.tbz2" -o \
@@ -32,7 +28,6 @@ if [ -z "$archives" ]; then
   exit 1
 fi
 
-# Center the header text
 header_text="tab: multi-select, enter: restore, ctrl-c: cancel"
 term_width=$(tput cols)
 padding=$(( (term_width - ${#header_text}) / 2 ))
@@ -54,7 +49,6 @@ fi
 
 log_step "Restoring archives..."
 
-# Ask for restore location
 read -p "Restore to (default: $restore_dir): " custom_restore_dir
 restore_dir="${custom_restore_dir:-$restore_dir}"
 
@@ -64,7 +58,6 @@ if [ ! -d "$restore_dir" ]; then
 fi
 
 echo "$selected_archives" | while read -r archive_display; do
-  # Convert ~/ back to full path
   archive=$(echo "$archive_display" | sed "s|^~|$HOME|")
 
   if [ ! -e "$archive" ]; then
@@ -74,8 +67,7 @@ echo "$selected_archives" | while read -r archive_display; do
 
   filename=$(basename "$archive")
   log_info "Restoring: $archive_display"
-  
-  # Determine decompression command based on file extension
+
   case "$archive" in
     *.tar.gz|*.tgz)
       tar -xzf "$archive" -C "$restore_dir"

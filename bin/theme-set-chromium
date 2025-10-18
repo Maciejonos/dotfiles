@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CHROMIUM_THEME=~/.config/dotfiles/current/theme/chromium.theme
+CHROMIUM_THEME=~/.local/share/dotfiles/current/theme/chromium.theme
 
 if command -v chromium >/dev/null 2>&1; then
   if [[ -f $CHROMIUM_THEME ]]; then
@@ -14,4 +14,3 @@ if command -v chromium >/dev/null 2>&1; then
   echo "{\"BrowserThemeColor\": \"$THEME_HEX_COLOR\"}" | tee "/etc/chromium/policies/managed/color.json" >/dev/null
   chromium --refresh-platform-policy --no-startup-window
 fi
-

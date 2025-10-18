@@ -22,11 +22,11 @@
     "format": "  {}",
     "escape": true,
     "return-type": "json",
-    "exec": "~/.local/bin/update-check",
+    "exec": "update-check",
     "interval": 1800,
     "signal": 1,
     "hide-empty-text": true,
-    "on-click": "ghostty --class=local.floating -e ~/.local/bin/update-perform"
+    "on-click": "ghostty --class=local.floating -e update-perform"
   },
 
   // Hypridle
@@ -36,8 +36,8 @@
     "escape": true,
     "exec-on-event": true,
     "interval": 60,
-    "exec": "~/.config/hypr/scripts/hypridle.sh status",
-    "on-click": "~/.config/hypr/scripts/hypridle.sh toggle"
+    "exec": "~/.config/hypr/scripts/hypridle status",
+    "on-click": "~/.config/hypr/scripts/hypridle toggle"
   },
 
   // Clock
@@ -56,7 +56,7 @@
 
   // Pulseaudio
   "pulseaudio": {
-    "scroll-step": 1, 
+    "scroll-step": 1,
     "format": "{icon}",
     "on-click": "ghostty --class=local.wiremix -e wiremix",
     "on-click-right": "pamixer -t",
@@ -75,39 +75,51 @@
     "tooltip-format": "Devices connected: {num_connections}",
     "on-click": "ghostty --class=local.bluetui -e bluetui"
   },
-  
+
   // Battery
   "battery": {
-  "format": "{capacity}% {icon}",
-  "format-discharging": "{icon}",
-  "format-charging": "{icon}",
-  "format-plugged": "",
-  "format-icons": {
-    "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
-    "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
-  },
-  "format-full": "󰂅",
-  "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
-  "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
-  "interval": 5,
-  "states": {
-    "warning": 20,
-    "critical": 10
-     }
+    "format": "{capacity}% {icon}",
+    "format-discharging": "{icon}",
+    "format-charging": "{icon}",
+    "format-plugged": "",
+    "format-icons": {
+      "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
+      "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    },
+    "format-full": "󰂅",
+    "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+    "interval": 5,
+    "states": {
+      "warning": 20,
+      "critical": 10
+    }
   },
 
   // Network
   "network": {
-  "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
-  "format": "{icon}",
-  "format-wifi": "{icon}",
-  "format-ethernet": "󰀂",
-  "format-disconnected": "󰤮",
-  "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
-  "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
-  "tooltip-format-disconnected": "Disconnected",
-  "interval": 3,
-  "spacing": 1,
-  "on-click": "ghostty --class=local.impala -e impala"
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "󰀂",
+    "format-disconnected": "󰤮",
+    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 3,
+    "spacing": 1,
+    "on-click": "ghostty --class=local.impala -e impala"
+  },
+
+  // Quicklinks
+  "custom/brightness": {
+    "format": "",
+    "on-click": "ddc-brightness-popup"
+  },
+
+  "custom/filemanager": {
+    "format": "",
+    "on-click": "nautilus",
+    "tooltip-format": "Open Filemanager"
   }
 }

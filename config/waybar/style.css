@@ -1,15 +1,14 @@
-@import "../dotfiles/current/theme/waybar.css";
-
+@import "../../.local/share/dotfiles/current/theme/waybar.css";
 
 * {
-  background-color: transparent;
-  color: @foreground;
+    background-color: transparent;
+    color: @foreground;
 
-  border: none;
-  border-radius: 0;
-  min-height: 0;
-  font-family: CaskaydiaMono Nerd Font;
-  font-size: 16px;
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+    font-family: CaskaydiaMono Nerd Font;
+    font-size: 16px;
 }
 
 window#waybar {
@@ -24,16 +23,15 @@ window#waybar {
     margin: 8px 10px 8px 0px;
 }
 
-
 #workspaces button {
-  all: initial;
-  padding: 0 6px;
-  margin: 0 1.5px;
-  min-width: 9px;
+    all: initial;
+    padding: 0 6px;
+    margin: 0 1.5px;
+    min-width: 9px;
 }
 
 #workspaces button.empty {
-  opacity: 0.5;
+    opacity: 0.5;
 }
 
 #cpu,
@@ -45,10 +43,10 @@ window#waybar {
 #custom-openwebui,
 #custom-brightness,
 #custom-hypridle,
-#custom-filemanager{
-  min-width: 12px;
-  margin: 0 8px;
-  font-size: 16px;
+#custom-filemanager {
+    min-width: 12px;
+    margin: 0 8px;
+    font-size: 16px;
 }
 
 #custom-hypridle.notactive {
@@ -56,8 +54,8 @@ window#waybar {
 }
 tooltip {
     background-color: alpha(@background, 0.9);
-    padding:20px;
-    margin:0px;
+    padding: 20px;
+    margin: 0px;
 }
 
 tooltip label {

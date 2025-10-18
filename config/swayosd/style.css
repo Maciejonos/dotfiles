@@ -1,26 +1,26 @@
-@import "../dotfiles/current/theme/swayosd.css";
+@import "../../.local/share/dotfiles/current/theme/swayosd.css";
 
 window {
-  border-radius: 0;
-  opacity: 0.97;
-  border: 2px solid @border-color;
-  background-color: @background-color;
+    border-radius: 0;
+    opacity: 0.97;
+    border: 2px solid @border-color;
+    background-color: @background-color;
 }
 
 label {
-  font-family: 'CaskaydiaMono Nerd Font';
-  font-size: 12pt;
-  color: @label;
+    font-family: "CaskaydiaMono Nerd Font";
+    font-size: 12pt;
+    color: @label;
 }
 
 image {
-  color: @image;
+    color: @image;
 }
 
 progressbar {
-  border-radius: 0;
+    border-radius: 0;
 }
 
 progress {
-  background-color: @progress;
+    background-color: @progress;
 }

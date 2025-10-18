@@ -5,6 +5,7 @@ polkit-gnome
 
 # Browsers
 chromium
+zen-browser-bin
 
 # Development
 git
@@ -25,6 +26,7 @@ fzf
 ripgrep
 zoxide
 pv
+bc
 
 # Hyprland Ecosystem
 hyprpaper
@@ -47,7 +49,7 @@ slurp
 satty
 zenity
 uwsm
-python-pywal
+python-pywal16
 gjs
 waypaper
 matugen-bin
