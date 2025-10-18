@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -e
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source "$SCRIPT_DIR/lib/helpers.sh"
+DOTFILES_DIR="$HOME/.local/share/dotfiles"
+
+# Applications
+log_info "Setting up applications..."
+mkdir -p "$HOME/.local/share/applications"
+for app_file in "$DOTFILES_DIR/applications"/*; do
+  if [ -f "$app_file" ]; then
+    app_name=$(basename "$app_file")
+    target_app="$HOME/.local/share/applications/$app_name"
+    [ -f "$target_app" ] && continue
+    cp "$app_file" "$target_app"
+  fi
+done

@@ -1,0 +1,34 @@
+#!/bin/bash
+
+set -e
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+source "$SCRIPT_DIR/lib/helpers.sh"
+DOTFILES_DIR="$HOME/.local/share/dotfiles"
+
+# Set initial theme
+log_info "Setting up initial theme (everforest)..."
+mkdir -p "$DOTFILES_DIR/current"
+ln -snf "$DOTFILES_DIR/themes/everforest" "$DOTFILES_DIR/current/theme"
+ln -snf "$DOTFILES_DIR/current/theme/backgrounds/1-everforest.jpg" "$DOTFILES_DIR/current/background"
+
+mkdir -p "$HOME/.config/nvim/lua/plugins"
+mkdir -p "$HOME/.config/btop/themes"
+mkdir -p "$HOME/.config/mako"
+mkdir -p "$HOME/.config/eza"
+
+ln -snf "$DOTFILES_DIR/current/theme/neovim.lua" "$HOME/.config/nvim/lua/plugins/theme.lua"
+ln -snf "$DOTFILES_DIR/current/theme/btop.theme" "$HOME/.config/btop/themes/current.theme"
+ln -snf "$DOTFILES_DIR/current/theme/mako.ini" "$HOME/.config/mako/config"
+ln -snf "$DOTFILES_DIR/current/theme/eza.yml" "$HOME/.config/eza/theme.yml"
+
+mkdir -p "$DOTFILES_DIR/themes/matugen"
+mkdir -p "$DOTFILES_DIR/themes/pywal"
+ln -snf "$DOTFILES_DIR/themes/backgrounds" "$DOTFILES_DIR/themes/matugen"
+ln -snf "$DOTFILES_DIR/themes/backgrounds" "$DOTFILES_DIR/themes/pywal"
+
+gsettings set org.gnome.desktop.interface icon-theme "Yaru-sage"
+gsettings set org.gnome.desktop.interface font-name 'CaskaydiaMono Nerd Font Mono 11'
+gsettings set org.gnome.desktop.interface monospace-font-name 'CaskaydiaMono Nerd Font Mono 11'
+
+log_success "Initial theme set (everforest)"

@@ -1,0 +1,129 @@
+#!/bin/bash
+
+set -e
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source "$SCRIPT_DIR/lib/helpers.sh"
+source "$SCRIPT_DIR/lib/backup.sh"
+DOTFILES_DIR="$HOME/.local/share/dotfiles"
+
+# Configure gnome-keyring PAM
+log_info "Configuring gnome-keyring PAM integration..."
+
+[ -f "/etc/pam.d/login" ] && backup_file "/etc/pam.d/login"
+[ -f "/etc/pam.d/passwd" ] && backup_file "/etc/pam.d/passwd"
+
+# Configure /etc/pam.d/login
+if ! grep -q "pam_gnome_keyring.so" /etc/pam.d/login; then
+  sudo sed -i '/auth.*include.*system-local-login/a auth       optional     pam_gnome_keyring.so' /etc/pam.d/login
+  sudo sed -i '/session.*include.*system-local-login/a session    optional     pam_gnome_keyring.so auto_start' /etc/pam.d/login
+fi
+
+# Configure /etc/pam.d/passwd
+if ! grep -q "pam_gnome_keyring.so" /etc/pam.d/passwd; then
+  echo "password	optional	pam_gnome_keyring.so" | sudo tee -a /etc/pam.d/passwd >/dev/null
+fi
+
+log_success "gnome-keyring PAM configured"
+
+# Configure pacman.conf
+log_info "Configuring pacman.conf..."
+PACMAN_CONF="/etc/pacman.conf"
+
+[ -f "$PACMAN_CONF" ] && backup_file "$PACMAN_CONF"
+sudo cp "$DOTFILES_DIR/default/pacman/pacman.conf" "$PACMAN_CONF"
+log_success "pacman.conf configured"
+
+# Configure UFW
+if is_installed "ufw"; then
+  log_info "Configuring UFW..."
+  sudo ufw default deny incoming
+  sudo ufw default allow outgoing
+  sudo ufw allow 53317/udp comment 'LocalSend'
+  sudo ufw allow 53317/tcp comment 'LocalSend'
+  sudo ufw allow 22/tcp comment 'SSH'
+  sudo ufw --force enable
+  sudo systemctl enable ufw
+  log_success "UFW configured and enabled"
+else
+  log_detail "UFW not installed, skipping firewall configuration"
+fi
+
+# Detect and configure NVIDIA if present
+if has_nvidia_gpu; then
+  log_info "NVIDIA GPU detected, configuring for Hyprland..."
+  bash "$SCRIPT_DIR/setup-nvidia"
+fi
+
+# Configure git user
+log_info "Configuring git user information..."
+
+CURRENT_GIT_NAME=$(git config --global user.name 2>/dev/null || true)
+CURRENT_GIT_EMAIL=$(git config --global user.email 2>/dev/null || true)
+
+if [ -n "$CURRENT_GIT_NAME" ] && [ -n "$CURRENT_GIT_EMAIL" ]; then
+  log_detail "Git already configured:"
+  log_detail "  Name:  $CURRENT_GIT_NAME"
+  log_detail "  Email: $CURRENT_GIT_EMAIL"
+
+  if ask_yes_no "Update git config?"; then
+    CURRENT_GIT_NAME=""
+    CURRENT_GIT_EMAIL=""
+  fi
+fi
+
+if [ -z "$CURRENT_GIT_NAME" ]; then
+  if _has_gum; then
+    GIT_NAME=$(gum input --placeholder "Enter your name (used for git)" || true)
+  else
+    read -p "Enter your name: " GIT_NAME
+  fi
+
+  if [ -n "$GIT_NAME" ]; then
+    git config --global user.name "$GIT_NAME"
+    log_success "Set git user.name: $GIT_NAME"
+  fi
+fi
+
+if [ -z "$CURRENT_GIT_EMAIL" ]; then
+  if _has_gum; then
+    GIT_EMAIL=$(gum input --placeholder "Enter your email (used for git)" || true)
+  else
+    read -p "Enter your email: " GIT_EMAIL
+  fi
+
+  if [ -n "$GIT_EMAIL" ]; then
+    git config --global user.email "$GIT_EMAIL"
+    log_success "Set git user.email: $GIT_EMAIL"
+  fi
+fi
+
+# Setup chromium policies
+log_info "Configuring chromium policy..."
+sudo mkdir -p /etc/chromium/policies/managed
+sudo chown -R "$USER:$USER" /etc/chromium/policies
+sudo chmod -R 755 /etc/chromium/policies
+log_success "Chromium policies configured"
+
+# ly display manager configuration
+log_info "Configuring ly display manager..."
+if is_installed "ly"; then
+  sudo mkdir -p /etc/systemd/system/ly.service.d
+  [ -f "/etc/systemd/system/ly.service.d/override.conf" ] && backup_file "/etc/systemd/system/ly.service.d/override.conf"
+  sudo cp "$DOTFILES_DIR/default/ly/override.conf" /etc/systemd/system/ly.service.d/override.conf
+  sudo systemctl daemon-reload
+
+  [ -f "/etc/ly/config.ini" ] && backup_file "/etc/ly/config.ini"
+  sudo rm -f /etc/ly/config.ini
+  sudo cp "$DOTFILES_DIR/default/ly/config.ini" /etc/ly/config.ini
+
+  log_success "ly display manager configured"
+else
+  log_detail "ly not installed, skipping"
+fi
+
+# Remove wait on network from system startup
+log_info "Disabling systemd-networkd-wait-online.service..."
+sudo systemctl disable systemd-networkd-wait-online.service 2>/dev/null || true
+
+log_success "System configuration complete!"

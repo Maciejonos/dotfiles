@@ -1,0 +1,36 @@
+#!/bin/bash
+set -e
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source "$SCRIPT_DIR/lib/helpers.sh"
+DOTFILES_DIR="$HOME/.local/share/dotfiles"
+
+if [ -d "$HOME/.config/nvim" ]; then
+  log_info "Existing nvim config found, removing..."
+  rm -rf "$HOME/.config/nvim"
+fi
+
+if ! git clone https://github.com/LazyVim/starter ~/.config/nvim; then
+  log_error "Failed to clone LazyVim starter"
+  exit 1
+fi
+rm -rf ~/.config/nvim/.git
+log_info "LazyVim starter cloned"
+
+if [ -d "$DOTFILES_DIR/default/nvim" ]; then
+  cp -r "$DOTFILES_DIR/default/nvim"/* "$HOME/.config/nvim/"
+else
+  log_error "Could not setup lazyvim"
+  exit 1
+fi
+
+# Append custom options to options.lua
+cat >> "$HOME/.config/nvim/lua/config/options.lua" <<'EOF'
+
+local opt = vim.opt
+
+opt.number = true -- Show absolute line numbers
+opt.relativenumber = false -- Disable relative line numbers
+EOF
+
+log_success "Lazyvim setup finished!"
