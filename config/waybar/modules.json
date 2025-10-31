@@ -132,8 +132,8 @@
 
   // Quicklinks
   "custom/brightness": {
-    "format": "",
-    "on-click": "ddc-brightness-popup"
+    "format": "",
+    "on-click": "walker --theme menus -m menus:brightness --width 50 --maxwidth 50"
   },
 
   "custom/filemanager": {

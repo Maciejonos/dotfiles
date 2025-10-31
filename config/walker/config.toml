@@ -28,6 +28,9 @@ anchor_right = true
 "menus:transcode" = { input = "Transcode media", list = "No Results" }
 "menus:ollama" = { input = "Ollama", list = "No Results" }
 "menus:keybindings" = { input = "Keybindings", list = "No Results" }
+"menus:bookmarks" = { input = "Bookmarks", list = "No Results" }
+"menus:bookmarks-actions" = { input = "Bookmark Actions", list = "No Results" }
+"menus:brightness" = { input = "Set brightness", list = "No Results" }
 
 [keybinds]
 close = ["Escape"]
@@ -164,4 +167,8 @@ clipboard = [
 
 "menus:waybar-themes" = [
   { action = "provider:menus:themes", bind = "ctrl x", global = true, after = "ClearReload" },
+]
+
+"menus:bookmarks" = [
+  { action = "open", default = true, bind = "Return" },
 ]
