@@ -101,6 +101,9 @@ elephant-clipboard
 elephant-files
 elephant-menus
 elephant-todo
+elephant-desktopapplications
+elephant-providerlist
+elephant-symbols
 
 # Image & Video Processing
 imagemagick
