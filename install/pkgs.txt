@@ -96,13 +96,14 @@ localsend-bin
 mpv
 
 # Elephant Suite
-elephant-calc
-elephant-clipboard
-elephant-files
-elephant-menus
-elephant-todo
+elephant
 elephant-desktopapplications
 elephant-providerlist
+elephant-clipboard
+elephant-menus
+elephant-calc
+elephant-files
+elephant-todo
 elephant-symbols
 
 # Image & Video Processing
