@@ -1,52 +1,52 @@
 @import "../../../../current/theme/walker.css";
 
 * {
-  all: unset;
+    all: unset;
 }
 
 .normal-icons {
-  -gtk-icon-size: 16px;
+    -gtk-icon-size: 16px;
 }
 
 .large-icons {
-  -gtk-icon-size: 32px;
+    -gtk-icon-size: 32px;
 }
 
 scrollbar {
-  opacity: 0;
+    opacity: 0;
 }
 
 .box-wrapper {
-  box-shadow:
-    0 19px 38px rgba(0, 0, 0, 0.3),
-    0 15px 12px rgba(0, 0, 0, 0.22);
-  background: alpha(@background, 0.85);
-  padding: 20px;
-  border-radius: 10px;
-  border: 1.5px solid @border;
+    box-shadow:
+        0 19px 38px rgba(0, 0, 0, 0.3),
+        0 15px 12px rgba(0, 0, 0, 0.22);
+    background: alpha(@background, 0.85);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1.5px solid @border;
 }
 
 .preview-box,
 .elephant-hint,
 .placeholder {
-  color: @text;
+    color: @text;
 }
 
 .box {
 }
 
 .search-container {
-  border-radius: 10px;
+    border-radius: 10px;
 }
 
 .input placeholder {
-  opacity: 0.5;
+    opacity: 0.5;
 }
 
 .input {
-  caret-color: @selected-text;
-  background: darker(alpha(@background, 0.5));
-  padding: 10px;
+    caret-color: @selected-text;
+    background: darker(alpha(@background, 0.5));
+    padding: 10px;
 }
 
 .input:focus,
@@ -63,92 +63,88 @@ scrollbar {
 }
 
 .list {
-  color: @text;
+    color: @text;
 }
 
 child {
 }
 
 .item-box {
-  border-radius: 10px;
-  padding: 10px;
+    border-radius: 10px;
+    padding: 10px;
 }
 
 .item-quick-activation {
-  margin-left: 10px;
-  background: alpha(@background, 0.25);
-  border-radius: 5px;
-  padding: 10px;
+    background: alpha(@background, 0.25);
+    border-radius: 5px;
+    padding: 10px;
 }
 
 child:hover .item-box,
 child:selected .item-box {
-  background: darker(alpha(@background, 0.5));
+    background: darker(alpha(@background, 0.5));
 }
 
 .item-text-box {
 }
 
-.item-text {
-}
-
 .item-subtext {
-  font-size: 12px;
-  opacity: 0.5;
+    font-size: 12px;
+    opacity: 0.5;
 }
 
-.item-image,
-.item-image-text {
-  margin-right: 10px;
+.providerlist .item-subtext {
+    font-size: unset;
+    opacity: 0.75;
 }
 
 .item-image-text {
-  font-size: 28px;
+    font-size: 28px;
 }
 
 .preview {
-  border: 1px solid alpha(@background, 0.25);
-  padding: 10px;
-  border-radius: 10px;
-  color: @foreground;
+    border: 1px solid alpha(@background, 0.25);
+    padding: 10px;
+    border-radius: 10px;
+    color: @foreground;
 }
 
 .calc .item-text {
-  font-size: 24px;
+    font-size: 24px;
 }
 
 .calc .item-subtext {
 }
 
 .symbols .item-image {
-  font-size: 24px;
+    font-size: 24px;
 }
 
 .todo.done .item-text-box {
-  opacity: 0.25;
+    opacity: 0.25;
 }
 
 .todo.urgent {
-  font-size: 24px;
+    font-size: 24px;
 }
 
 .todo.active {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 .bluetooth.disconnected {
-  opacity: 0.5;
+    opacity: 0.5;
 }
 
 .preview .large-icons {
-  -gtk-icon-size: 64px;
+    -gtk-icon-size: 64px;
 }
 
 .keybinds-wrapper {
-  border-top: 1px solid darker(@border);
-  font-size: 12px;
-  opacity: 0.5;
-  color: @foreground;
+    border-top: 1px solid darker(@border);
+    font-size: 12px;
+    opacity: 0.5;
+    color: @foreground;
 }
 
 .keybinds {
@@ -158,9 +154,20 @@ child:selected .item-box {
 }
 
 .keybind-bind {
-  /* color: lighter(@window_bg_color); */
-  font-weight: bold;
+    /* color: lighter(@window_bg_color); */
+    font-weight: bold;
+    text-transform: lowercase;
 }
 
 .keybind-label {
+}
+
+.error {
+    padding: 10px;
+    background: @error_bg_color;
+    color: @error_fg_color;
+}
+
+:not(.calc).current {
+    font-style: italic;
 }

@@ -1,1 +1,2 @@
+min_score = 50
 paths = ["~/.config/elephant/menus/dynamic"]

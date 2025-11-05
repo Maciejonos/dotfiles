@@ -29,10 +29,6 @@ if [[ "$BRANCH" == "dev" ]]; then
     if command -v run-updates &>/dev/null; then
       run-updates
     fi
-
-    if command -v update-packages &>/dev/null; then
-      update-packages
-    fi
     echo
 
     if command -v update-configs &>/dev/null; then

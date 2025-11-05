@@ -1,0 +1,20 @@
+icon = ""
+min_score = 100
+
+[[categories]]
+name = "work"
+prefix = "w:"
+
+[[categories]]
+name = "personal"
+prefix = "p:"
+
+[[browsers]]
+name = "Zen"
+command = "zen-browser"
+icon = "zen-browser"
+
+[[browsers]]
+name = "Helium"
+command = "helium-browser"
+icon = "helium-browser"

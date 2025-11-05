@@ -3,19 +3,31 @@ source "$HOME/.local/share/dotfiles/bin/lib/helpers.sh"
 
 fzf_args=(
   --multi
-  --preview 'pacman -Sii {1}'
-  --preview-label='alt-p: toggle description, alt-j/k: scroll, tab: multi-select, F11: maximize'
+  --preview 'paru -Si {2}'
+  --preview-label='alt-p: toggle description, alt-b/B: toggle PKGBUILD, alt-j/k: scroll, tab: multi-select, F11: maximize'
   --preview-label-pos='bottom'
   --preview-window 'down:65%:wrap'
   --bind 'alt-p:toggle-preview'
   --bind 'alt-d:preview-half-page-down,alt-u:preview-half-page-up'
   --bind 'alt-k:preview-up,alt-j:preview-down'
+  --bind 'alt-b:change-preview:paru -Gpa {2} | tail -n +5'
+  --bind 'alt-B:change-preview:paru -Siia {2}'
   --color 'pointer:green,marker:green'
 )
 
-pkg_names=$(pacman -Slq | fzf "${fzf_args[@]}")
+format_packages() {
+  awk '{
+    colors["core"] = "\033[34m"; colors["extra"] = "\033[32m"; colors["aur"] = "\033[33m"
+    color = ($1 in colors) ? colors[$1] : "\033[0m"
+    installed = ($4 == "[installed]") ? " [installed]" : ""
+    printf "%s[%s]\033[0m %s%s\n", color, $1, $2, installed
+  }'
+}
+
+pkg_names=$(paru -Sl | format_packages | fzf "${fzf_args[@]}" --ansi | awk '{print $2}')
 
 if [[ -n "$pkg_names" ]]; then
-  echo "$pkg_names" | tr '\n' ' ' | xargs sudo pacman -S --noconfirm
+  echo "$pkg_names" | tr '\n' ' ' | xargs paru -S --noconfirm
+  sudo updatedb
   show_done
 fi

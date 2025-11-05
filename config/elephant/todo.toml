@@ -1,7 +1,12 @@
-icon = ""  
-min_score = 50              # minimum score to show items
-create_prefix = "add"       # prefix for creating new tasks, e.g., add:new task
-urgent_time_frame = 10      # items due within 10 minutes are marked urgent
-duck_player_volumes = true  # lower volume during notifications
-title = "Task Due"          # notification title
-body = "%TASK%"             # body of the notification
+icon = ""
+min_score = 50             # minimum score to show items
+urgent_time_frame = 60     # items due within 60 minutes are marked urgent
+duck_player_volumes = true # lower volume during notifications
+
+[[categories]]
+name = "Work"
+prefix = "w:"
+
+[[categories]]
+name = "Personal"
+prefix = "p:"

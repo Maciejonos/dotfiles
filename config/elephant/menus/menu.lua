@@ -2,7 +2,7 @@ Name = "menu"
 NamePretty = "Menu"
 FixedOrder = true
 HideFromProviderlist = true
-Icon = ""
+Description = "Menu"
 
 function GetEntries()
 	return {
@@ -17,63 +17,56 @@ function GetEntries()
 			Text = "Install package",
 			Icon = "󰣇",
 			Actions = {
-				["pkg-install"] = "ghostty --class=local.floating -e pkg-install",
-			},
-		},
-		{
-			Text = "Install AUR package",
-			Icon = "",
-			Actions = {
-				["pkg-install-aur"] = "ghostty --class=local.floating -e pkg-install-aur",
+				["manage-pkg"] = "ghostty --class=local.floating -e pkg-install",
 			},
 		},
 		{
 			Text = "Remove package",
-			Icon = "",
+			Icon = "󰭌",
 			Actions = {
-				["pkg-remove"] = "ghostty --class=local.floating -e pkg-remove",
+				["manage-pkg"] = "ghostty --class=local.floating -e pkg-remove",
 			},
 		},
 		{
 			Text = "Change themes",
 			Icon = "󰸌",
 			Actions = {
-				["change-themes"] = "walker --theme menus -m menus:themes --width 295 --minheight 1 --maxheight 600",
+				["change-themes"] = "walker -t menus -m menus:themes",
 			},
 		},
 		{
 			Text = "Capture",
 			Icon = "",
 			Actions = {
-				["capture"] = "walker --theme menus -m menus:capture --width 295 --minheight 1 --maxheight 600",
+				["capture"] = "walker -t menus -m menus:capture",
 			},
 		},
 		{
 			Text = "Setup",
 			Icon = "󰉉",
 			Actions = {
-				["setup"] = "walker --theme menus -m menus:setup --width 295 --minheight 1 --maxheight 600",
+				["setup"] = "walker -t menus -m menus:setup",
 			},
 		},
 		{
 			Text = "Tools",
 			Icon = "",
 			Actions = {
-				["tools"] = "walker --theme menus -m menus:tools --width 295 --minheight 1 --maxheight 600",
+				["tools"] = "walker -t menus -m menus:tools",
 			},
 		},
 		{
 			Text = "Keybindings",
 			Icon = "",
 			Actions = {
-				["keybindings"] = "walker --theme menus -m menus:keybindings --width 800 --minheight 1 --maxheight 600",
+				["keybindings"] = "walker -t menus -m menus:keybindings",
 			},
 		},
 		{
 			Text = "System",
 			Icon = "󰐥",
 			Actions = {
-				["system"] = "walker --theme menus -m menus:system --width 295 --minheight 1 --maxheight 600",
+				["system"] = "walker -t menus -m menus:system",
 			},
 		},
 	}
