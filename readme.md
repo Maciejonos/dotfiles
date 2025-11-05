@@ -1,6 +1,3 @@
-# NO LONGER MAINTANED:
-- I will be switching to [Niri](https://github.com/YaLTeR/niri) with the next release, so v1.6.0 is probably the last version.
-
 # Dotfiles for Hyprland on Arch Linux
 
 [![Arch Linux](https://img.shields.io/badge/Arch-Linux-1793D1?logo=arch-linux&logoColor=white)](https://archlinux.org/)
