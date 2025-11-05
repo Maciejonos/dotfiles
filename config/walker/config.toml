@@ -4,9 +4,12 @@ click_to_close = true           # closes walker if clicking outside of the main 
 selection_wrap = false          # wrap list if at bottom or top
 global_argument_delimiter = "#" # query: firefox#https://benz.dev => part after delimiter will be ignored when querying. this should be the same as in the elephant config
 exact_search_prefix = "'"       # disable fuzzy searching
-theme = "dotfiles"               # theme to use
-disable_mouse = false           # disable mouse (on input and list only)
+theme = "dotfiles"              # theme to use
 additional_theme_location = "~/.local/share/dotfiles/default/walker/themes/"
+disable_mouse = false           # disable mouse (on input and list only)
+debug = false                   # enables debug printing for some stuff, f.e. keybinds
+page_jump_items = 10            # number of items to skip with Page Up/Down
+hide_quick_activation = true   # globally hide the quick activation buttons
 
 [shell]
 anchor_top = true
@@ -16,21 +19,6 @@ anchor_right = true
 
 [placeholders]
 "default" = { input = "Search", list = "No Results" }
-"menus:system" = { input = "System", list = "No Results" }
-"menus:menu" = { input = "Search", list = "No Results" }
-"menus:backups" = { input = "Backups", list = "No Results" }
-"menus:capture" = { input = "Capture", list = "No Results" }
-"menus:tools" = { input = "Tools", list = "No Results" }
-"menus:postgres" = { input = "Postgres", list = "No Results" }
-"menus:screenshots" = { input = "Screenshots", list = "No Results" }
-"menus:setup" = { input = "Setup", list = "No Results" }
-"menus:themes" = { input = "Themes", list = "No Results" }
-"menus:transcode" = { input = "Transcode media", list = "No Results" }
-"menus:ollama" = { input = "Ollama", list = "No Results" }
-"menus:keybindings" = { input = "Keybindings", list = "No Results" }
-"menus:bookmarks" = { input = "Bookmarks", list = "No Results" }
-"menus:bookmarks-actions" = { input = "Bookmark Actions", list = "No Results" }
-"menus:brightness" = { input = "Set brightness", list = "No Results" }
 
 [keybinds]
 close = ["Escape"]
@@ -38,42 +26,110 @@ next = ["Down"]
 previous = ["Up"]
 toggle_exact = ["ctrl e"]
 resume_last_query = ["ctrl r"]
-quick_activate = []
+quick_activate = ["F1", "F2", "F3", "F4"]
+page_down = ["Page_Down"]
+page_up = ["Page_Up"]
 
 [providers]
 default = [
   "desktopapplications"
 ]
-empty = ["desktopapplications"]
-previews = [
-  "files",
-  "clipboard"
+empty = ["desktopapplications"] # providers to be queried when query is empty
+ignore_preview = [] # providers that should not show previews
+max_results = 50 # global max results
+
+[providers.sets.menu]
+default = [
+    "menus:menu",
+    "menus:themes",
+    "menus:capture",
+    "menus:setup",
+    "menus:tools",
+    "menus:backups",
+    "menus:fastfetch_themes",
+    "menus:starship_themes",
+    "menus:system-themes",
+    "menus:waybar-themes",
+    "menus:ollama",
+    "menus:postgres",
+    "menus:screenshots",
+    "menus:transcode"
 ]
-max_results = 100
+empty = ["menus:menu"]
+max_results = 50
 
 [[providers.prefixes]]
 prefix = ";"
 provider = "providerlist"
 
 [[providers.prefixes]]
+prefix = ">"
+provider = "runner"
+
+[[providers.prefixes]]
 prefix = "/"
 provider = "files"
+
+[[providers.prefixes]]
+prefix = "."
+provider = "symbols"
 
 [[providers.prefixes]]
 prefix = "!"
 provider = "todo"
 
 [[providers.prefixes]]
+prefix = "%"
+provider = "bookmarks"
+
+[[providers.prefixes]]
 prefix = "="
 provider = "calc"
 
-[providers.actions]
-dmenu = [
- { action = "select", default = true, bind = "Return" }
+[[providers.prefixes]]
+prefix = "@"
+provider = "websearch"
+
+[[providers.prefixes]]
+prefix = ":"
+provider = "clipboard"
+
+[[providers.prefixes]]
+prefix = "$"
+provider = "windows"
+
+[providers.clipboard]
+time_format = "%d.%m. - %H:%M" # format for the clipboard item date
+
+[providers.actions] # This will be MERGED/OVEWRITTEN with what the user specifies
+fallback = [
+  { action = "menus:open", label = "open", after = "Nothing" },
+  { action = "menus:default", label = "run", after = "Close" },
+  { action = "menus:parent", label = "back", bind = "Escape", after = "Nothing" },
+  { action = "erase_history", label = "clear hist", bind = "ctrl h", after = "AsyncReload" },
 ]
+
+dmenu = [{ action = "select", default = true, bind = "Return" }]
 
 providerlist = [
   { action = "activate", default = true, bind = "Return", after = "ClearReload" },
+]
+
+bluetooth = [
+  { action = "find", bind = "ctrl f", after = "AsyncClearReload" },
+  { action = "trust", bind = "ctrl t", after = "AsyncReload" },
+  { action = "untrust", bind = "ctrl t", after = "AsyncReload" },
+  { action = "pair", bind = "Return", after = "AsyncReload" },
+  { action = "remove", bind = "ctrl d", after = "AsyncReload" },
+  { action = "connect", bind = "Return", after = "AsyncReload" },
+  { action = "disconnect", bind = "Return", after = "AsyncReload" },
+]
+
+archlinuxpkgs = [
+  { action = "install", bind = "Return", default = true },
+  { action = "remove", bind = "Return" },
+  { action = "show_all", label = "show all", bind = "ctrl i", after = "AsyncClearReload" },
+  { action = "show_installed", label = "show installed", bind = "ctrl i", after = "AsyncClearReload" },
 ]
 
 calc = [
@@ -82,93 +138,59 @@ calc = [
   { action = "save", bind = "ctrl s", after = "AsyncClearReload" },
 ]
 
+websearch = [{ action = "search", default = true, bind = "Return" }]
+
 desktopapplications = [
   { action = "start", default = true, bind = "Return" },
   { action = "start:keep", label = "open+next", bind = "shift Return", after = "KeepOpen" },
-  { action = "erase_history", label = "clear hist", bind = "ctrl h", after = "AsyncReload" },
+
+  { action = "new_instance", label = "new instance", bind = "ctrl Return" },
+  { action = "new_instance:keep", label = "new+next", bind = "ctrl alt Return", after = "KeepOpen" },
   { action = "pin", bind = "ctrl p", after = "AsyncReload" },
   { action = "unpin", bind = "ctrl p", after = "AsyncReload" },
   { action = "pinup", bind = "ctrl n", after = "AsyncReload" },
   { action = "pindown", bind = "ctrl m", after = "AsyncReload" },
 ]
 
+files = [
+  { action = "open", default = true, bind = "Return" },
+  { action = "opendir", label = "open dir", bind = "ctrl Return" },
+  { action = "copypath", label = "copy path", bind = "ctrl shift c" },
+  { action = "copyfile", label = "copy file", bind = "ctrl c" },
+]
+
 todo = [
-  { action = "save", default = true, bind = "Return", after = "ClearReload" },
-  { action = "delete", bind = "ctrl d", after = "ClearReload" },
-  { action = "active", bind = "Return", after = "ClearReload" },
-  { action = "inactive", bind = "Return", after = "ClearReload" },
-  { action = "done", bind = "ctrl f", after = "ClearReload" },
-  { action = "clear", bind = "ctrl x", after = "ClearReload", global = true },
+  { action = "save", default = true, bind = "Return", after = "AsyncClearReload" },
+  { action = "delete", bind = "ctrl d", after = "AsyncClearReload" },
+  { action = "active", bind = "Return", after = "AsyncClearReload" },
+  { action = "inactive", bind = "Return", after = "AsyncClearReload" },
+  { action = "done", bind = "ctrl f", after = "AsyncClearReload" },
+  { action = "change_category", bind = "ctrl y", label = "change category", after = "AsyncClearReload" },
+  { action = "clear", bind = "ctrl x", after = "AsyncClearReload" },
+]
+
+symbols = [
+  { action = "run_cmd", label = "select", default = true, bind = "Return" },
 ]
 
 clipboard = [
   { action = "copy", default = true, bind = "Return" },
-  { action = "remove", bind = "ctrl d", after = "ClearReload" },
-  { action = "remove_all", global = true, label = "clear", bind = "ctrl shift d", after = "ClearReload" },
-  { action = "toggle_images", global = true, label = "toggle images", bind = "ctrl i", after = "ClearReload" },
+  { action = "remove", bind = "ctrl d", after = "AsyncClearReload" },
+  { action = "remove_all", label = "clear", bind = "ctrl shift d", after = "AsyncClearReload" },
+  { action = "show_images_only", label = "only images", bind = "ctrl i", after = "AsyncClearReload" },
+  { action = "show_text_only", label = "only text", bind = "ctrl i", after = "AsyncClearReload" },
+  { action = "show_combined", label = "show all", bind = "ctrl i", after = "AsyncClearReload" },
+  { action = "pause", bind = "ctrl p" },
+  { action = "unpause", bind = "ctrl p" },
   { action = "edit", bind = "ctrl o" },
 ]
 
-"menus:screenshots" = [
-  { action = "provider:menus:capture", bind = "ctrl x", global = true, after = "ClearReload" },
-]
-
-"menus:system" = [
-  { action = "provider:menus:menu", bind = "ctrl x", global = true, after = "ClearReload" },
-]
-
-"menus:setup" = [
-  { action = "provider:menus:menu", bind = "ctrl x", global = true, after = "ClearReload" },
-]
-
-"menus:postgres" = [
-  { action = "provider:menus:setup", bind = "ctrl x", global = true, after = "ClearReload" },
-]
-
-"menus:capture" = [
-  { action = "provider:menus:menu", bind = "ctrl x", global = true, after = "ClearReload" },
-]
-
-"menus:backups" = [
-  { action = "provider:menus:tools", bind = "ctrl x", global = true, after = "ClearReload" },
-]
-
-"menus:themes" = [
-  { action = "provider:menus:menu", bind = "ctrl x", global = true, after = "ClearReload" },
-]
-
-"menus:tools" = [
-  { action = "provider:menus:menu", bind = "ctrl x", global = true, after = "ClearReload" },
-]
-
-"menus:transcode" = [
-  { action = "provider:menus:tools", bind = "ctrl x", global = true, after = "ClearReload" },
-]
-
-"menus:ollama" = [
-  { action = "provider:menus:tools", bind = "ctrl x", global = true, after = "ClearReload" },
-]
-
-"menus:keybindings" = [
-  { action = "provider:menus:menu", bind = "ctrl x", global = true, after = "ClearReload" },
-]
-
-"menus:system-themes" = [
-  { action = "provider:menus:themes", bind = "ctrl x", global = true, after = "ClearReload" },
-]
-
-"menus:starship-themes" = [
-  { action = "provider:menus:themes", bind = "ctrl x", global = true, after = "ClearReload" },
-]
-
-"menus:fastfetch-themes" = [
-  { action = "provider:menus:themes", bind = "ctrl x", global = true, after = "ClearReload" },
-]
-
-"menus:waybar-themes" = [
-  { action = "provider:menus:themes", bind = "ctrl x", global = true, after = "ClearReload" },
-]
-
-"menus:bookmarks" = [
+bookmarks = [
+  { action = "save", bind = "Return", after = "AsyncClearReload" },
   { action = "open", default = true, bind = "Return" },
+  { action = "delete", bind = "ctrl d", after = "AsyncClearReload" },
+  { action = "change_category", label = "Change category", bind = "ctrl y", after = "Nothing" },
+  { action = "change_browser", label = "Change browser", bind = "ctrl b", after = "Nothing" },
+  { action = "import", label = "Import", bind = "ctrl i", after = "AsyncClearReload" },
 ]
+

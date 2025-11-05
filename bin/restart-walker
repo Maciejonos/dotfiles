@@ -4,25 +4,19 @@ killall elephant walker 2>/dev/null
 
 sleep 0.5
 
-# Start walker if not already running
 if ! pgrep -x walker >/dev/null 2>&1; then
   setsid uwsm app -- walker --gapplication-service >/dev/null 2>&1 &
-  
-  # Wait for walker to be ready
+
   for i in {1..10}; do
     if pgrep -x walker >/dev/null 2>&1; then
-      sleep 0.5 
+      sleep 0.5
       break
     fi
     sleep 0.2
   done
 fi
 
-# Start elephant if not already running
-if ! pgrep -x walker >/dev/null 2>&1; then
-  echo "Warning: walker is not running, elephant may fail to start"
-fi
-
 if ! pgrep -x elephant >/dev/null 2>&1; then
   setsid uwsm app -- elephant >/dev/null 2>&1 &
 fi
+

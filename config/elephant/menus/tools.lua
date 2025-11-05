@@ -3,6 +3,7 @@ NamePretty = "tools"
 FixedOrder = true
 HideFromProviderlist = true
 Icon = ""
+Parent = "menu"
 
 function GetEntries()
     return {
@@ -10,7 +11,7 @@ function GetEntries()
             Text = "Ollama",
             Icon = "",
             Actions = {
-                ["ollama"] = "walker --theme menus -m menus:ollama --width 295 --minheight 1 --maxheight 600",
+                ["ollama"] = "walker --theme menus -m menus:ollama",
             },
         },
         {
@@ -24,7 +25,7 @@ function GetEntries()
             Text = "Transcode",
             Icon = "",
             Actions = {
-                ["transcode"] = "walker --theme menus -m menus:transcode --width 295 --minheight 1 --maxheight 600",
+                ["transcode"] = "walker --theme menus -m menus:transcode",
             },
         },
         {
@@ -38,7 +39,7 @@ function GetEntries()
             Text = "Backups",
             Icon = "",
             Actions = {
-                ["backups"] = "walker --theme menus -m menus:backups --width 295 --minheight 1 --maxheight 600",
+                ["backups"] = "walker --theme menus -m menus:backups",
             },
         },
         {
