@@ -25,8 +25,24 @@ log_info "Backup session: $BACKUP_SESSION"
 # Ensure gum is installed first
 ensure_gum
 
-# Authenticate sudo early to cache credentials
+# Authenticate sudo early and keep the authentication alive during the installation
 sudo -v
+
+# Start a background process that refreshes the sudo timestamp every 3 minutes
+(
+  while true; do
+    # Renew sudo credentials without prompting for password
+    sudo -v
+    sleep 180
+  done
+) &
+SUDO_KEEPALIVE_PID=$!
+
+# Define a cleanup function to stop the keepalive process when the script exits
+cleanup_sudo_keepalive() {
+  kill "$SUDO_KEEPALIVE_PID" 2>/dev/null || true
+}
+trap cleanup_sudo_keepalive EXIT
 
 _installParu() {
   if ! is_installed "base-devel"; then
