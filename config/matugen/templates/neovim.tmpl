@@ -1,0 +1,10 @@
+return {
+  {
+    "bjarneo/aether.nvim",
+    priority = 1000,
+    config = function()
+      require("aether").setup()
+      vim.cmd.colorscheme("aether")
+    end,
+  }
+}

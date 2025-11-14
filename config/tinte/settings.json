@@ -1,0 +1,8 @@
+{
+  "wallpaperFolder": null,
+  "posthookScript": "theme-set",
+  "exportThemeLocation": null,
+  "applyThemeLocation": null,
+  "colorBackend": "imagemagick",
+  "wallpaperBackend": "hyprpaper"
+}

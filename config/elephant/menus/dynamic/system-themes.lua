@@ -24,12 +24,12 @@ function GetEntries()
 		for line in handle:lines() do
 			local theme_name = line:match("([^/]+)$")
 
-			if theme_name and theme_name ~= "backgrounds" then
+			if theme_name then
 				local display_name = theme_name:gsub("-", " "):gsub("(%a)([%w_']*)", function(first, rest)
 					return first:upper() .. rest
 				end)
 
-				local is_dynamic = (theme_name == "pywal" or theme_name == "matugen")
+				local is_dynamic = (theme_name == "tinte" or theme_name == "matugen")
 				local is_current = (theme_name == current_theme)
 				local prefix = is_current and "* " or ""
 

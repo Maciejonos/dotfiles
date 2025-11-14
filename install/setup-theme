@@ -23,10 +23,13 @@ ln -snf "$DOTFILES_DIR/current/theme/mako.ini" "$HOME/.config/mako/config"
 mkdir -p "$HOME/.config/fastfetch"
 ln -snf "$DOTFILES_DIR/config/fastfetch/configs/config-default.jsonc" "$HOME/.config/fastfetch/config.jsonc"
 
-cp -r "$DOTFILES_DIR/default/matugen" "$DOTFILES_DIR/themes/"
-cp -r "$DOTFILES_DIR/default/pywal" "$DOTFILES_DIR/themes/"
-ln -snf "$DOTFILES_DIR/themes/backgrounds" "$DOTFILES_DIR/themes/matugen"
-ln -snf "$DOTFILES_DIR/themes/backgrounds" "$DOTFILES_DIR/themes/pywal"
+log_info "Setting up wallpapers symlink..."
+mkdir -p "$HOME/Pictures"
+if [ -L "$HOME/Pictures/dotfiles-wallpapers" ] || [ -d "$HOME/Pictures/dotfiles-wallpapers" ]; then
+  mv "$HOME/Pictures/dotfiles-wallpapers" "$HOME/Pictures/dotfiles-wallpapers-backup"
+fi
+ln -sf "$DOTFILES_DIR/backgrounds" "$HOME/Pictures/dotfiles-wallpapers"
+log_detail "Wallpapers symlinked to ~/Pictures/dotfiles-wallpapers"
 
 gsettings set org.gnome.desktop.interface icon-theme "Yaru-sage"
 gsettings set org.gnome.desktop.interface font-name 'CaskaydiaMono Nerd Font Mono 11'

@@ -35,6 +35,13 @@ function GetEntries()
 			},
 		},
 		{
+			Text = "Next background",
+			Icon = "",
+			Actions = {
+				["change-bg"] = "theme-bg-next",
+			},
+		},
+		{
 			Text = "Capture",
 			Icon = "",
 			Actions = {

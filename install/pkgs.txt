@@ -28,17 +28,19 @@ pv
 bc
 
 # Hyprland Ecosystem
+hyprcursor
+hyprgraphics
+hypridle
 hyprland
-hyprland-qtutils
-hyprland-qt-support
+hyprland-guiutils
+hyprlang
+hyprlock
 hyprpaper
 hyprpicker
-hypridle
-hyprlock
+hyprtoolkit
+hyprutils
+hyprwayland-scanner
 xdg-desktop-portal-hyprland
-hyprsunset
-hyprcursor
-hyprshot
 
 # Wayland Tools & UI
 waybar
@@ -48,15 +50,17 @@ swayosd
 grim
 slurp
 satty
+tesseract
+tesseract-data-eng
 kooha
 zenity
 uwsm
-python-pywal16
 gjs
-waypaper
-matugen-bin
 impala
 loupe
+sunsetr
+tinte
+matugen
 
 # Audio
 pamixer
@@ -117,5 +121,4 @@ xdg-desktop-portal-gtk
 xdg-utils
 
 # Utilities
-wget
 jq

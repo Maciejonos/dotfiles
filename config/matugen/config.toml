@@ -17,11 +17,11 @@ input_path = '~/.config/matugen/templates/hyprlock.conf'
 output_path = '~/.local/share/dotfiles/themes/matugen/hyprlock.conf'
 
 [templates.mako]
-input_path  = "~/.config/matugen/templates/mako.conf.tmpl"
+input_path = "~/.config/matugen/templates/mako.conf.tmpl"
 output_path = "~/.local/share/dotfiles/themes/matugen/mako.ini"
 
 [templates.swayosd]
-input_path  = "~/.config/matugen/templates/swayosd.css.tmpl"
+input_path = "~/.config/matugen/templates/swayosd.css.tmpl"
 output_path = "~/.local/share/dotfiles/themes/matugen/swayosd.css"
 
 [templates.waybar]
@@ -32,6 +32,6 @@ output_path = '~/.local/share/dotfiles/themes/matugen/waybar.css'
 input_path = '~/.config/matugen/templates/gtk.css'
 output_path = '~/.local/share/dotfiles/themes/matugen/gtk.css'
 
-[templates.walker]
-input_path = '~/.config/matugen/templates/walker.css'
-output_path = '~/.local/share/dotfiles/themes/matugen/walker.css'
+[templates.nvim]
+input_path = '~/.config/matugen/templates/neovim.tmpl'
+output_path = '~/.local/share/dotfiles/themes/matugen/neovim.lua'
