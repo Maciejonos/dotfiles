@@ -82,7 +82,9 @@ if [ -d "$DOTFILES_DIR/default/systemd/user" ]; then
   log_detail "Service files copied"
 fi
 
+set +e
 systemctl --user daemon-reload 2>/dev/null || log_error "Failed to reload systemd"
+set -e
 
 log_info "Enabling and starting user services..."
 USER_SERVICES=(
@@ -95,7 +97,7 @@ USER_SERVICES=(
   "waybar.service"
   "hyprpaper.service"
 )
-
+set +e
 for service in "${USER_SERVICES[@]}"; do
   if systemctl --user enable --now "$service" 2>/dev/null; then
     log_detail "$service enabled and started"
@@ -103,6 +105,7 @@ for service in "${USER_SERVICES[@]}"; do
     log_detail "$service (not available or already enabled)"
   fi
 done
+set -e
 
 [ -d "$HOME/.config/wal/templates" ] && rm -rf "$HOME/.config/wal/templates"
 [ -d "$HOME/.config/waypaper" ] && rm -rf "$HOME/.config/waypaper"
