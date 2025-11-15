@@ -1,0 +1,14 @@
+#!/bin/bash
+
+status=$(sunsetr status 2>&1)
+
+if echo "$status" | grep -q "ERROR"; then
+  sunsetr -b >/dev/null 2>&1
+  sleep 0.5
+  status=$(sunsetr status 2>&1)
+  next_period=$(echo "$status" | grep "Next period" | awk '{$1=$2=""; print $0}' | sed 's/^ *//')
+  notify-send "sunsetr enabled" "Next period: $next_period"
+else
+  sunsetr stop >/dev/null 2>&1
+  notify-send "sunsetr disabled"
+fi

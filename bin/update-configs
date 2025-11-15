@@ -14,12 +14,11 @@ if [[ "$1" == "--dry-run" ]]; then
 fi
 
 EXCLUDES=(
-  "waypaper"
-  "waypaper/*"
   "hypr/hyprland.conf"
   "hypr/conf/monitors.conf"
   "waybar/config"
   "waybar/style.css"
+  "tinte/settings.json"
 )
 
 is_excluded() {

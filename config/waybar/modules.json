@@ -16,7 +16,6 @@
       "*": 5
     }
   },
-
   // Updates Count
   "custom/updates": {
     "format": " {}",
@@ -28,7 +27,6 @@
     "hide-empty-text": true,
     "on-click": "ghostty --class=local.floating -e update-perform"
   },
-
   // Hypridle
   "custom/hypridle": {
     "format": "",
@@ -39,7 +37,6 @@
     "exec": "hypridle-toggle status",
     "on-click": "hypridle-toggle toggle"
   },
-
   // Music
   "custom/music": {
     "format": "  {}",
@@ -50,28 +47,24 @@
     "on-click": "playerctl play-pause",
     "max-length": 50
   },
-
   // Exit
   "custom/exit": {
     "format": "",
     "tooltip-format": "Exit menu",
     "on-click": "walker --theme menus -m menus:system --width 150 --minheight 1 --maxheight 600"
   },
-
   // Clock
   "clock": {
     "format": "{:%A %H:%M}",
     "format-alt": "{:%d %B %Y}",
     "tooltip": false
   },
-
   // CPU
   "cpu": {
     "interval": 5,
     "format": "",
     "on-click": "ghostty -e btop"
   },
-
   // Pulseaudio
   "pulseaudio": {
     "scroll-step": 1,
@@ -81,10 +74,13 @@
     "tooltip-format": "Playing at {volume}%",
     "format-muted": "",
     "format-icons": {
-      "default": ["", "", " "]
+      "default": [
+        "",
+        "",
+        " "
+      ]
     }
   },
-
   // Bluetooth
   "bluetooth": {
     "format": "",
@@ -93,7 +89,6 @@
     "tooltip-format": "Devices connected: {num_connections}",
     "on-click": "ghostty --class=local.bluetui -e bluetui"
   },
-
   // Battery
   "battery": {
     "format": "{capacity}% {icon}",
@@ -101,23 +96,50 @@
     "format-charging": "{icon}",
     "format-plugged": "",
     "format-icons": {
-      "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
-      "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+      "charging": [
+        "󰢜",
+        "󰂆",
+        "󰂇",
+        "󰂈",
+        "󰢝",
+        "󰂉",
+        "󰢞",
+        "󰂊",
+        "󰂋",
+        "󰂅"
+      ],
+      "default": [
+        "󰁺",
+        "󰁻",
+        "󰁼",
+        "󰁽",
+        "󰁾",
+        "󰁿",
+        "󰂀",
+        "󰂁",
+        "󰂂",
+        "󰁹"
+      ]
     },
     "format-full": "󰂅",
     "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
     "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
-    "on-click": "power-profile --select",
+    "on-click": "walker -t dotfiles -m menus:power-profiles",
     "interval": 5,
     "states": {
       "warning": 20,
       "critical": 10
     }
   },
-
   // Network
   "network": {
-    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format-icons": [
+      "󰤯",
+      "󰤟",
+      "󰤢",
+      "󰤥",
+      "󰤨"
+    ],
     "format": "{icon}",
     "format-wifi": "{icon}",
     "format-ethernet": "󰀂",
@@ -129,13 +151,11 @@
     "spacing": 1,
     "on-click": "ghostty --class=local.impala -e impala"
   },
-
   // Quicklinks
   "custom/brightness": {
     "format": "",
     "on-click": "walker --theme menus -m menus:brightness --width 50 --maxwidth 50"
   },
-
   "custom/filemanager": {
     "format": "",
     "on-click": "nautilus",

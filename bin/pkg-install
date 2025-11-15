@@ -4,9 +4,9 @@ source "$HOME/.local/share/dotfiles/bin/lib/helpers.sh"
 fzf_args=(
   --multi
   --preview 'paru -Si {2}'
-  --preview-label='alt-p: toggle description, alt-b/B: toggle PKGBUILD, alt-j/k: scroll, tab: multi-select, F11: maximize'
+  --preview-label='alt-p: toggle desc, alt-b/B: toggle PKGBUILD, alt-j/k: scroll, tab: multi-select'
   --preview-label-pos='bottom'
-  --preview-window 'down:65%:wrap'
+  --preview-window 'down:55%:wrap'
   --bind 'alt-p:toggle-preview'
   --bind 'alt-d:preview-half-page-down,alt-u:preview-half-page-up'
   --bind 'alt-k:preview-up,alt-j:preview-down'
