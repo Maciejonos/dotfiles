@@ -64,50 +64,18 @@ for pkg in "${NEW_PACKAGES[@]}"; do
   fi
 done
 
-log_info "Migrating to systemd user services..."
-
-pkill -x mako 2>/dev/null || true
-pkill -x hyprsunset 2>/dev/null || true
-pkill -x hypridle 2>/dev/null || true
-pkill -x waybar 2>/dev/null || true
-pkill -x swayosd-server 2>/dev/null || true
-pkill -x walker 2>/dev/null || true
-pkill -x elephant 2>/dev/null || true
-pkill -x hyprpaper 2>/dev/null || true
-sleep 1
-
 mkdir -p "$HOME/.config/systemd/user"
 if [ -d "$DOTFILES_DIR/default/systemd/user" ]; then
   cp -f "$DOTFILES_DIR/default/systemd/user/"*.service "$HOME/.config/systemd/user/" 2>/dev/null || true
   log_detail "Service files copied"
 fi
 
-set +e
-systemctl --user daemon-reload 2>/dev/null || log_error "Failed to reload systemd"
-set -e
+systemctl --user daemon-reload 2>/dev/null || {
+  log_error "Failed to reload systemd"
+  true
+}
 
-log_info "Enabling and starting user services..."
-USER_SERVICES=(
-  "elephant.service"
-  "hypridle.service"
-  "mako.service"
-  "sunsetr.service"
-  "swayosd.service"
-  "walker.service"
-  "waybar.service"
-  "hyprpaper.service"
-)
-set +e
-for service in "${USER_SERVICES[@]}"; do
-  if systemctl --user enable --now "$service" 2>/dev/null; then
-    log_detail "$service enabled and started"
-  else
-    log_detail "$service (not available or already enabled)"
-  fi
-done
-set -e
-
-[ -d "$HOME/.config/wal/templates" ] && rm -rf "$HOME/.config/wal/templates"
+[ -d "$HOME/.config/wal" ] && rm -rf "$HOME/.config/wal"
 [ -d "$HOME/.config/waypaper" ] && rm -rf "$HOME/.config/waypaper"
 [ -f "$HOME/.config/hypr/hyprsunset.conf" ] && rm -f "$HOME/.config/hypr/hyprsunset.conf"
 
@@ -136,5 +104,19 @@ fi
 
 log_info "Reloading Hyprland..."
 hyprctl reload 2>/dev/null || log_detail "Hyprland not running"
+
+mkdir -p "$HOME/.config/tinte"
+[ -f "$HOME/.config/tinte/settings.json" ] && rm -f "$HOME/.config/tinte/settings.json"
+cat >"$HOME/.config/tinte/settings.json" <<EOF
+{
+  "wallpaperFolder": "$HOME/Pictures/dotfiles-wallpapers",
+  "posthookScript": "theme-set",
+  "exportThemeLocation": "$HOME/.config/tinte/exported-themes",
+  "applyThemeLocation": "$HOME/.local/share/dotfiles/themes/tinte",
+  "colorBackend": "imagemagick",
+  "wallpaperBackend": "hyprpaper"
+}
+EOF
+log_detail "Tinte config created/updated"
 
 notify-send -t 10000 "Lots of updates. Check release notes. You may need to restart." 2>/dev/null || true

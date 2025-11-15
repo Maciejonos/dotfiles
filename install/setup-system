@@ -2,7 +2,7 @@
 
 set -e
 
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 source "$SCRIPT_DIR/lib/helpers.sh"
 source "$SCRIPT_DIR/lib/backup.sh"
 DOTFILES_DIR="$HOME/.local/share/dotfiles"
@@ -134,7 +134,6 @@ fi
 
 systemctl --user daemon-reload 2>/dev/null || log_detail "Failed to reload systemd"
 
-# Enable and start user services
 USER_SERVICES=(
   "elephant.service"
   "hypridle.service"
@@ -147,11 +146,13 @@ USER_SERVICES=(
 )
 
 for service in "${USER_SERVICES[@]}"; do
-  if systemctl --user enable "$service" 2>/dev/null; then
-    log_detail "$service enabled"
+  if [ -f "$HOME/.config/systemd/user/$service" ]; then
+    systemctl --user enable "$service" &>/dev/null && log_detail "$service enabled" || log_detail "$service (already enabled)"
   else
-    log_detail "$service (not available or failed)"
+    log_detail "$service (service file not found)"
   fi
 done
+
+log_detail "Services will start on next login or Hyprland restart"
 
 log_success "System configuration complete!"

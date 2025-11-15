@@ -18,6 +18,7 @@ EXCLUDES=(
   "hypr/conf/monitors.conf"
   "waybar/config"
   "waybar/style.css"
+  "tinte/settings.json"
 )
 
 is_excluded() {

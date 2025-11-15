@@ -50,8 +50,8 @@ swayosd
 grim
 slurp
 satty
-tesseract
 tesseract-data-eng
+tesseract
 kooha
 zenity
 uwsm
