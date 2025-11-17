@@ -64,7 +64,7 @@ Quick info:
 ### Automatic installer
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Maciejonos/dotfiles/master/setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/right9code/dotfiles/my-feature-branch/setup.sh | bash
 ```
 
 **⚠️ Important Notes:**
