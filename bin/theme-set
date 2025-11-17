@@ -1,244 +1,105 @@
 #!/bin/bash
 source "$HOME/.local/share/dotfiles/bin/lib/helpers.sh"
-source "$HOME/.local/share/dotfiles/bin/lib/theme-colors-generate.sh"
 
-CONFIG_BASE="$HOME/.local/share/dotfiles"
-THEMES_DIR="$CONFIG_BASE/themes"
-CURRENT_THEME_LINK="$CONFIG_BASE/current/theme"
-CURRENT_BACKGROUND_LINK="$CONFIG_BASE/current/background"
-
-get_current_theme() {
-    if [[ -L "$CURRENT_THEME_LINK" ]]; then
-        basename "$(readlink "$CURRENT_THEME_LINK")"
-    else
-        echo ""
-    fi
-}
-
-is_dynamic_theme() {
-    local theme_name="$1"
-    [[ "$theme_name" == "pywal" || "$theme_name" == "matugen" ]]
-}
+THEMES_DIR="$HOME/.local/share/dotfiles/themes"
+CURRENT_THEME_LINK="$HOME/.local/share/dotfiles/current/theme"
+CURRENT_BACKGROUND_LINK="$HOME/.local/share/dotfiles/current/background"
 
 set_wallpaper() {
-    local wallpaper="$1"
+  local wallpaper="$1"
+  ln -nsf "$wallpaper" "$CURRENT_BACKGROUND_LINK"
 
-    if [[ ! -f "$wallpaper" ]]; then
-        log_error "Wallpaper file not found: $wallpaper"
-        return 1
-    fi
-
-    # Update background symlink
-    ln -nsf "$wallpaper" "$CURRENT_BACKGROUND_LINK"
-
-    # Apply wallpaper to all monitors
-    hyprctl monitors -j | jq -r '.[].name' | while read -r monitor; do
-        hyprctl hyprpaper reload "$monitor,$wallpaper"
-    done
-
-    log_success "Wallpaper set: $(basename "$wallpaper")"
-    return 0
-}
-
-apply_gnome_settings() {
-    gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
-    gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
-
-    # Change gnome icon theme based on current theme
-    local gnome_icons_theme="$CONFIG_BASE/current/theme/icons.theme"
-    if [[ -f "$gnome_icons_theme" ]]; then
-        gsettings set org.gnome.desktop.interface icon-theme "$(<"$gnome_icons_theme")"
-    else
-        gsettings set org.gnome.desktop.interface icon-theme "Yaru-blue"
-    fi
+  hyprctl monitors -j | jq -r '.[].name' | while read -r monitor; do
+    hyprctl hyprpaper reload "$monitor,$CURRENT_BACKGROUND_LINK"
+  done
+  log_success "Wallpaper set: $(basename "$wallpaper")"
 }
 
 reload_apps() {
-    log_step "Reloading applications"
-    sleep 0.5
+  log_step "Reloading applications"
+  restart-app waybar
+  restart-app swayosd
+  hyprctl reload
+  pkill -SIGUSR2 btop
+  makoctl reload
+  killall -SIGUSR2 ghostty
+  killall xdg-desktop-portal-gtk
 
-    restart-app waybar
-    restart-app swayosd-server
-    hyprctl reload
-    pkill -SIGUSR2 btop
-    makoctl reload
-    killall -SIGUSR2 ghostty
-    apply_gnome_settings
+  local gnome_icons_theme="$HOME/.local/share/dotfiles/current/theme/icons.theme"
+  if [[ -f "$gnome_icons_theme" ]]; then
+    gsettings set org.gnome.desktop.interface icon-theme "$(<"$gnome_icons_theme")"
+  fi
 
-    log_success "Applications reloaded"
+  log_success "Applications reloaded"
 }
 
-get_first_wallpaper_from_theme() {
-    local theme_path="$1"
-    local backgrounds_dir="$theme_path/backgrounds"
+apply_dynamic_theme() {
+  local theme_name="$1"
+  local wallpaper="$2"
 
-    if [[ ! -d "$backgrounds_dir" ]]; then
-        return 1
-    fi
+  log_step "Applying ${theme_name^} theme"
 
-    local first_wallpaper=$(find -L "$backgrounds_dir" -type f | sort | head -n 1)
+  ln -nsf "$THEMES_DIR/$theme_name" "$CURRENT_THEME_LINK"
 
-    if [[ -z "$first_wallpaper" ]]; then
-        return 1
-    fi
+  if [[ -n "$wallpaper" ]]; then
+    set_wallpaper "$wallpaper"
+  fi
 
-    echo "$first_wallpaper"
-}
-
-get_next_wallpaper() {
-    local current_theme=$(get_current_theme)
-    local backgrounds_dir="$THEMES_DIR/$current_theme/backgrounds"
-
-    if [[ ! -d "$backgrounds_dir" ]]; then
-        notify-send "No backgrounds directory found for theme" -t 2000
-        return 1
-    fi
-
-    mapfile -d '' -t BACKGROUNDS < <(find -L "$backgrounds_dir" -type f -print0 | sort -z)
-    local total=${#BACKGROUNDS[@]}
-
-    if [[ $total -eq 0 ]]; then
-        notify-send "No backgrounds found for theme" -t 2000
-        return 1
-    fi
-
-    local current_background=""
-    if [[ -L "$CURRENT_BACKGROUND_LINK" ]]; then
-        current_background=$(readlink "$CURRENT_BACKGROUND_LINK")
-    fi
-
-    local index=-1
-    for i in "${!BACKGROUNDS[@]}"; do
-        if [[ "${BACKGROUNDS[$i]}" == "$current_background" ]]; then
-            index=$i
-            break
-        fi
-    done
-
-    if [[ $index -eq -1 ]]; then
-        echo "${BACKGROUNDS[0]}"
-    else
-        local next_index=$(((index + 1) % total))
-        echo "${BACKGROUNDS[$next_index]}"
-    fi
+  reload_apps
+  log_success "${theme_name^} theme applied"
 }
 
 switch_theme() {
-    local theme_name="$1"
+  local theme_name="$1"
 
-    log_step "Switching to theme: $theme_name"
+  theme_name=$(echo "$theme_name" | sed -E 's/<[^>]+>//g' | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
 
-    theme_name=$(echo "$theme_name" | sed -E 's/<[^>]+>//g' | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
-    local theme_path="$THEMES_DIR/$theme_name"
+  local theme_path="$THEMES_DIR/$theme_name"
 
-    if [[ ! -d "$theme_path" ]]; then
-        log_error "Theme '$theme_name' does not exist in $THEMES_DIR"
-        return 1
-    fi
+  if [[ ! -d "$theme_path" ]]; then
+    log_error "Theme '$theme_name' not found"
+    return 1
+  fi
 
-    ln -nsf "$theme_path" "$CURRENT_THEME_LINK"
-    log_success "Theme symlink updated"
+  log_step "Switching to theme: $theme_name"
 
-    local wallpaper=$(get_first_wallpaper_from_theme "$theme_path")
-    if [[ -z "$wallpaper" ]]; then
-        log_error "No wallpapers found in theme"
-        return 1
-    fi
+  ln -nsf "$theme_path" "$CURRENT_THEME_LINK"
 
+  local wallpaper=$(find -L "$theme_path/backgrounds" -type f | sort | head -n 1)
+  if [[ -n "$wallpaper" ]]; then
     set_wallpaper "$wallpaper"
+  fi
 
-    if is_dynamic_theme "$theme_name"; then
-        log_step "Generating colors (dynamic theme)"
-        generate_colors_from_wallpaper "$wallpaper"
-    fi
-
-    # Always reload apps when switching themes
-    reload_apps
-
-    log_success "Theme switched successfully"
+  reload_apps
+  log_success "Theme switched"
 }
 
 change_wallpaper() {
-    local wallpaper="$1"
+  local wallpaper="$1"
 
-    if [[ ! -f "$wallpaper" ]]; then
-        log_error "Wallpaper file not found: $wallpaper"
-        return 1
-    fi
+  if [[ ! -f "$wallpaper" ]]; then
+    log_error "Wallpaper not found"
+    return 1
+  fi
 
-    local current_theme=$(get_current_theme)
+  log_step "Changing wallpaper"
+  set_wallpaper "$wallpaper"
 
-    if [[ -z "$current_theme" ]]; then
-        log_error "No theme is currently active"
-        return 1
-    fi
-
-    log_step "Changing wallpaper on theme: $current_theme"
-
-    ln -nsf "$wallpaper" "$CURRENT_BACKGROUND_LINK"
-    log_success "Wallpaper updated: $(basename "$wallpaper")"
-
-    if is_dynamic_theme "$current_theme"; then
-        log_step "Generating colors (dynamic theme)"
-        generate_colors_from_wallpaper "$wallpaper"
-        reload_apps
-        log_success "Colors and apps updated"
-    else
-        log_info "Static theme - colors unchanged"
-    fi
-}
-
-cycle_background() {
-    local current_theme=$(get_current_theme)
-
-    if [[ -z "$current_theme" ]]; then
-        notify-send "No theme is currently active" -t 2000
-        return 1
-    fi
-
-    log_step "Cycling background on theme: $current_theme"
-
-    local next_wallpaper=$(get_next_wallpaper)
-    if [[ $? -ne 0 || -z "$next_wallpaper" ]]; then
-        return 1
-    fi
-
-    set_wallpaper "$next_wallpaper"
-
-    if is_dynamic_theme "$current_theme"; then
-        log_step "Generating colors (dynamic theme)"
-        generate_colors_from_wallpaper "$next_wallpaper"
-        reload_apps
-        log_success "Background cycled and colors updated"
-    else
-        notify-send "Background changed" "$(basename "$next_wallpaper")" -t 2000
-    fi
+  log_info "Use Tinte to regenerate colors for this wallpaper"
 }
 
 main() {
-    if [[ $# -eq 0 ]]; then
-        log_error "Usage: theme-set <theme-name> | --wallpaper <path> | --next-bg"
-        exit 1
-    fi
-
-    case "$1" in
-        --wallpaper)
-            if [[ -z "$2" ]]; then
-                log_error "Usage: theme-set --wallpaper <path>"
-                exit 1
-            fi
-            change_wallpaper "$2"
-            ;;
-        --next-bg)
-            cycle_background
-            ;;
-        *)
-            if [[ "$1" == "CNCLD" ]]; then
-                exit 0
-            fi
-            switch_theme "$1"
-            ;;
-    esac
+  case "$1" in
+  tinte | matugen)
+    apply_dynamic_theme "$1" "$2"
+    ;;
+  --wallpaper)
+    change_wallpaper "$2"
+    ;;
+  *)
+    switch_theme "$1"
+    ;;
+  esac
 }
 
 main "$@"

@@ -4,8 +4,6 @@
 
 Dotfiles setup with static and dynamic themes and plenty of useful scripts.
 
-[Credits - read here please](#credits)
-
 <table>
   <tr>
     <td><img src="demo/1.png" width="400"/></td>

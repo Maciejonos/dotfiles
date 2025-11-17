@@ -2,7 +2,7 @@
 
 set -e
 
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 source "$SCRIPT_DIR/lib/helpers.sh"
 source "$SCRIPT_DIR/lib/backup.sh"
 DOTFILES_DIR="$HOME/.local/share/dotfiles"
@@ -31,12 +31,24 @@ for target in "${TARGETS[@]}"; do
   remove_path "$target"
 done
 
-
 cp -r "$DOTFILES_DIR/config/"* "$HOME/.config/"
 log_success "Config copied!"
 
-echo "@import url(\"file://$HOME/.local/share/dotfiles/current/theme/gtk.css\");" > "$HOME/.config/gtk-3.0/gtk.css"
-echo "@import url(\"file://$HOME/.local/share/dotfiles/current/theme/gtk.css\");" > "$HOME/.config/gtk-4.0/gtk.css"
+echo "@import url(\"file://$HOME/.local/share/dotfiles/current/theme/gtk.css\");" >"$HOME/.config/gtk-3.0/gtk.css"
+echo "@import url(\"file://$HOME/.local/share/dotfiles/current/theme/gtk.css\");" >"$HOME/.config/gtk-4.0/gtk.css"
+
+mkdir -p "$HOME/.config/tinte"
+[ -f "$HOME/.config/tinte/settings.json" ] && rm -f "$HOME/.config/tinte/settings.json"
+cat > "$HOME/.config/tinte/settings.json" << EOF
+{
+  "wallpaperFolder": "$HOME/Pictures/dotfiles-wallpapers",
+  "posthookScript": "theme-set",
+  "exportThemeLocation": "$HOME/.config/tinte/exported-themes",
+  "applyThemeLocation": "$HOME/.local/share/dotfiles/themes/tinte",
+  "colorBackend": "imagemagick",
+  "wallpaperBackend": "hyprpaper"
+}
+EOF
 
 log_success "Config copied!"
 log_info "Backup saved to: $BACKUP_DIR"

@@ -35,5 +35,12 @@ function GetEntries()
                 ["change-starship"] = "walker --theme menus -m menus:starship-themes",
             },
         },
+        {
+            Text = "Cursor theme",
+            Icon = "󰸌",
+            Actions = {
+                ["change-cursor"] = "walker --theme menus -m menus:cursor-themes",
+            },
+        },
     }
 end

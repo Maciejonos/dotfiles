@@ -2,7 +2,7 @@
 
 set -e
 
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 source "$SCRIPT_DIR/lib/helpers.sh"
 source "$SCRIPT_DIR/lib/backup.sh"
 DOTFILES_DIR="$HOME/.local/share/dotfiles"
@@ -122,5 +122,37 @@ sudo systemctl disable systemd-networkd-wait-online.service 2>/dev/null || true
 # Enable ssh agent
 log_info "Enabling gcr-ssh-agent"
 systemctl --user enable --now gcr-ssh-agent.socket
+
+# Setup systemd user services
+log_info "Setting up systemd user services..."
+mkdir -p "$HOME/.config/systemd/user"
+
+if [ -d "$DOTFILES_DIR/default/systemd/user" ]; then
+  cp -f "$DOTFILES_DIR/default/systemd/user/"*.service "$HOME/.config/systemd/user/" 2>/dev/null || true
+  log_detail "Service files copied"
+fi
+
+systemctl --user daemon-reload 2>/dev/null || log_detail "Failed to reload systemd"
+
+USER_SERVICES=(
+  "elephant.service"
+  "hypridle.service"
+  "mako.service"
+  "sunsetr.service"
+  "swayosd.service"
+  "walker.service"
+  "waybar.service"
+  "hyprpaper.service"
+)
+
+for service in "${USER_SERVICES[@]}"; do
+  if [ -f "$HOME/.config/systemd/user/$service" ]; then
+    systemctl --user enable "$service" &>/dev/null && log_detail "$service enabled" || log_detail "$service (already enabled)"
+  else
+    log_detail "$service (service file not found)"
+  fi
+done
+
+log_detail "Services will start on next login or Hyprland restart"
 
 log_success "System configuration complete!"

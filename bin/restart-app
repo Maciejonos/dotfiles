@@ -1,4 +1,7 @@
 #!/bin/bash
 
-pkill -x $1
-setsid uwsm app -- $1 >/dev/null 2>&1 &
+if systemctl --user restart "$1.service"; then
+  notify-send "✓ $1 restarted successfully" -t 3000
+else
+  notify-send "✗ Failed to restart $1" -u critical -t 5000
+fi &

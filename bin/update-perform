@@ -50,10 +50,8 @@ else
 fi
 echo
 
-restart-walker
-echo
-
-# Reload Waybar
+# Reload
+restart-app elephant
 pkill -RTMIN+1 waybar
 echo
 
