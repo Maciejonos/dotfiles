@@ -20,11 +20,11 @@ fi
 
 HARDWARE=$(detect_hardware_type)
 if [ "$HARDWARE" = "laptop" ]; then
-  spinner "Installing brightnessctl..." paru --noconfirm -S brightnessctl
+  spinner "Installing brightnessctl..." yay --noconfirm -S brightnessctl
   KEYBIND_CONF="laptop-keybindings.conf"
   log_detail "Detected laptop hardware"
 else
-  spinner "Installing ddcutil..." paru --noconfirm -S ddcutil
+  spinner "Installing ddcutil..." yay --noconfirm -S ddcutil
   KEYBIND_CONF="desktop-keybindings.conf"
   log_detail "Detected desktop hardware"
 fi
