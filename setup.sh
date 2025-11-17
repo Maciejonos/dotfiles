@@ -3,7 +3,8 @@
 set -e
 
 DOTFILES_DIR="$HOME/.local/share/dotfiles"
-REPO_URL="https://github.com/right9code/dotfiles/my-feature-branch.git"
+REPO_URL="https://github.com/right9code/dotfiles.git"
+BRANCH="my-feature-branch"
 
 echo "=============="
 echo "Dotfiles Setup"
@@ -29,16 +30,16 @@ fi
 mkdir -p "$HOME/.config"
 
 # Create .local/share/dotfiles directory
-mkdir -p "$HOME/.local/share/dotfiles"
+mkdir -p "$DOTFILES_DIR"
 
-# Clone the dotfiles repository
-echo "Cloning dotfiles repository..."
-git clone "$REPO_URL" "$DOTFILES_DIR"
+# Clone the dotfiles repository and checkout the specific branch
+echo "Cloning dotfiles repository (branch: $BRANCH)..."
+git clone --branch "$BRANCH" "$REPO_URL" "$DOTFILES_DIR"
 
 echo
 echo "Repository cloned successfully!"
 echo "Starting installation..."
 echo
 
-# Run the installer
+# Run the installer script inside the cloned repo
 bash "$DOTFILES_DIR/install/install"
