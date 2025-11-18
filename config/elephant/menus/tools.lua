@@ -18,7 +18,7 @@ function GetEntries()
 			Text = "Ollama",
 			Icon = "",
 			Actions = {
-				["ollama"] = "walker --theme menus -m menus:ollama",
+				["ollama"] = "walker --theme menus -m menus:ollama -N",
 			},
 		},
 		{
@@ -32,7 +32,7 @@ function GetEntries()
 			Text = "Transcode",
 			Icon = "",
 			Actions = {
-				["transcode"] = "walker --theme menus -m menus:transcode",
+				["transcode"] = "walker --theme menus -m menus:transcode -N",
 			},
 		},
 		{
@@ -46,7 +46,7 @@ function GetEntries()
 			Text = "Backups",
 			Icon = "",
 			Actions = {
-				["backups"] = "walker --theme menus -m menus:backups",
+				["backups"] = "walker --theme menus -m menus:backups -N",
 			},
 		},
 		{
