@@ -31,7 +31,7 @@ function GetEntries()
 			Text = "Change themes",
 			Icon = "󰸌",
 			Actions = {
-				["change-themes"] = "walker -t menus -m menus:themes",
+				["change-themes"] = "walker -t menus -m menus:themes -N",
 			},
 		},
 		{
@@ -45,35 +45,35 @@ function GetEntries()
 			Text = "Capture",
 			Icon = "",
 			Actions = {
-				["capture"] = "walker -t menus -m menus:capture",
+				["capture"] = "walker -t menus -m menus:capture -N",
 			},
 		},
 		{
 			Text = "Setup",
 			Icon = "󰉉",
 			Actions = {
-				["setup"] = "walker -t menus -m menus:setup",
+				["setup"] = "walker -t menus -m menus:setup -N",
 			},
 		},
 		{
 			Text = "Tools",
 			Icon = "",
 			Actions = {
-				["tools"] = "walker -t menus -m menus:tools",
+				["tools"] = "walker -t menus -m menus:tools -N",
 			},
 		},
 		{
 			Text = "Keybindings",
 			Icon = "",
 			Actions = {
-				["keybindings"] = "walker -t menus -m menus:keybindings",
+				["keybindings"] = "walker -t menus -m menus:keybindings -N",
 			},
 		},
 		{
 			Text = "System",
 			Icon = "󰐥",
 			Actions = {
-				["system"] = "walker -t menus -m menus:system",
+				["system"] = "walker -t menus -m menus:system -N",
 			},
 		},
 	}
