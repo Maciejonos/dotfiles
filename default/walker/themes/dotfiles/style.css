@@ -1,4 +1,4 @@
-@import "../../../current/theme/walker.css";
+@import "../../../../current/theme/walker.css";
 
 @define-color error_bg_color #C34043;
 @define-color error_fg_color #DCD7BA;
@@ -35,8 +35,7 @@ scrollbar {
   color: @foreground;
 }
 
-.box {
-}
+.box {}
 
 .search-container {
   border-radius: 10px;
@@ -58,24 +57,19 @@ scrollbar {
 }
 
 .input:focus,
-.input:active {
-}
+.input:active {}
 
-.content-container {
-}
+.content-container {}
 
-.placeholder {
-}
+.placeholder {}
 
-.scroll {
-}
+.scroll {}
 
 .list {
   color: @foreground;
 }
 
-child {
-}
+child {}
 
 .item-box {
   border-radius: 10px;
@@ -93,8 +87,7 @@ child:selected .item-box {
   background: darker(alpha(@background, 0.6));
 }
 
-.item-text-box {
-}
+.item-text-box {}
 
 .item-subtext {
   font-size: 12px;
@@ -121,8 +114,7 @@ child:selected .item-box {
   font-size: 24px;
 }
 
-.calc .item-subtext {
-}
+.calc .item-subtext {}
 
 .symbols .item-image {
   font-size: 24px;
@@ -155,14 +147,11 @@ child:selected .item-box {
   color: @foreground;
 }
 
-.global-keybinds {
-}
+.global-keybinds {}
 
-.item-keybinds {
-}
+.item-keybinds {}
 
-.keybind {
-}
+.keybind {}
 
 .keybind-button {
   opacity: 0.5;
@@ -197,4 +186,3 @@ child:selected .item-box {
 .preview-content.archlinuxpkgs {
   font-family: monospace;
 }
-
