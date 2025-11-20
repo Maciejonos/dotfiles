@@ -146,10 +146,10 @@ USER_SERVICES=(
 )
 
 for service in "${USER_SERVICES[@]}"; do
-  if [ -f "$HOME/.config/systemd/user/$service" ]; then
-    systemctl --user enable "$service" &>/dev/null && log_detail "$service enabled" || log_detail "$service (already enabled)"
+  if systemctl --user enable "$service" &>/dev/null; then
+    log_detail "$service enabled"
   else
-    log_detail "$service (service file not found)"
+    log_detail "Failed to enable $service (may be missing)"
   fi
 done
 
