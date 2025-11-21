@@ -9,16 +9,16 @@ function GetEntries()
 	return {
 		{
 			Text = "Screenshot",
-			Icon = "",
+			Icon = "",
 			Actions = {
-				["screenshot"] = "walker --theme menus -m menus:screenshots -N",
+				["screenshot"] = "walker -t menus -m menus:screenshots -N",
 			},
 		},
 		{
 			Text = "Record",
-			Icon = "",
+			Icon = "",
 			Actions = {
-				["record"] = "kooha",
+				["record"] = "walker -t menus -m menus:screenrecord -N",
 			},
 		},
 	}

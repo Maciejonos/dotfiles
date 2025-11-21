@@ -31,17 +31,16 @@
 }
 
 #custom-music,
+#network,
+#battery,
 #tray,
 #bluetooth,
 #cpu,
 #clock,
-#network,
-#battery,
 #pulseaudio,
 #custom-brightness,
 #custom-hypridle,
-#custom-updates,
-#custom-exit {
+#custom-updates {
     background-color: @background;
     padding: 0.5rem 1rem;
     margin: 5px 0;
@@ -72,13 +71,11 @@
 
 #cpu,
 #network,
-#battery,
-#custom-hypridle,
 #custom-brightness {
     color: @foreground;
 }
 
-#custom-exit {
+#custom-hypridle {
     border-radius: 0rem 1rem 1rem 0rem;
     margin-right: 1rem;
     color: @foreground;
@@ -88,7 +85,8 @@
     border-radius: 1rem;
 }
 
-#custom-updates {
+#custom-updates,
+#custom-screenrecord {
     border-radius: 1rem;
     color: @foreground;
 }
@@ -106,4 +104,8 @@ tooltip {
 
 tooltip label {
     color: @foreground;
+}
+
+#custom-hypridle.notactive {
+    color: rgb(224, 137, 137);
 }

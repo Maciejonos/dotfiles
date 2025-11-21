@@ -1,0 +1,28 @@
+#!/bin/bash
+
+TIMESTAMP_FILE="/tmp/screenrecord-start-time"
+
+if pgrep -f "gpu-screen-recorder" >/dev/null; then
+  if [[ -f "$TIMESTAMP_FILE" ]]; then
+    start_time=$(cat "$TIMESTAMP_FILE")
+    current_time=$(date +%s)
+    elapsed=$((current_time - start_time))
+
+    hours=$((elapsed / 3600))
+    minutes=$(((elapsed % 3600) / 60))
+    seconds=$((elapsed % 60))
+
+    if [[ $hours -gt 0 ]]; then
+      timer=$(printf "%d:%02d:%02d" $hours $minutes $seconds)
+    else
+      timer=$(printf "%02d:%02d" $minutes $seconds)
+    fi
+
+    echo "{\"text\": \"󰻂 $timer\", \"tooltip\": \"Stop recording\", \"class\": \"active\"}"
+  else
+    echo '{"text": "󰻂", "tooltip": "Stop recording", "class": "active"}'
+  fi
+else
+  echo '{"text": ""}'
+fi
+

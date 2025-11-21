@@ -46,14 +46,13 @@
 
     // Modules Right
     "modules-right": [
+        "custom/screenrecord",
         "custom/updates",
         "pulseaudio",
-        "bluetooth",
         "network",
+        "bluetooth",
         "cpu",
-        "custom/brightness",
+        "battery",
         "custom/hypridle",
-        "custom/exit",
-        "battery"
     ]
 }

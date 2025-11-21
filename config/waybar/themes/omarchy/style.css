@@ -37,14 +37,14 @@ window#waybar {
 #cpu,
 #bluetooth,
 #pulseaudio,
-#network,
 #clock,
+#network,
 #battery,
-#custom-exit,
 #custom-updates,
 #custom-openwebui,
 #custom-brightness,
 #custom-hypridle,
+#custom-screenrecord,
 #custom-filemanager {
     min-width: 12px;
     margin: 0 8px;

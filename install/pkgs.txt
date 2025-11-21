@@ -1,10 +1,25 @@
-# Security & Authentication
+# System & Security
 gnome-keyring
+openssh
 polkit-gnome
+ufw
+usbutils
 
-# Browser
-helium-browser-bin
-zen-browser-bin
+# Terminal & Shell
+bat
+bc
+btop
+eza
+fastfetch
+fd
+fzf
+ghostty
+jq
+pv
+ripgrep
+starship
+zoxide
+zsh
 
 # Development
 git
@@ -12,22 +27,11 @@ lazygit
 neovim
 visual-studio-code-bin
 
-# Terminal & Shell
-ghostty
-zsh
-starship
-eza
-bat
-btop
-fastfetch
-fd
-fzf
-ripgrep
-zoxide
-pv
-bc
+# Browsers
+helium-browser-bin
+zen-browser-bin
 
-# Hyprland Ecosystem
+# Hyprland
 hyprcursor
 hyprgraphics
 hypridle
@@ -42,25 +46,30 @@ hyprutils
 hyprwayland-scanner
 xdg-desktop-portal-hyprland
 
-# Wayland Tools & UI
-waybar
-mako
-walker
-swayosd
-grim
-slurp
-satty
-tesseract-data-eng
-tesseract
-kooha
-zenity
-uwsm
+# Wayland UI & Utilities
 gjs
+grim
 impala
-loupe
-sunsetr
-tinte
+mako
+imagemagick
 matugen
+satty
+slurp
+sunsetr
+swayosd
+tesseract
+tesseract-data-eng
+tinte
+uwsm
+walker
+waybar
+zenity
+
+# Screen Recording & Video
+ffmpeg
+gpu-screen-recorder
+handbrake-cli
+yt-dlp
 
 # Audio
 pamixer
@@ -71,29 +80,28 @@ bluez
 bluez-libs
 bluez-utils
 bluetui
-openssh
-ufw
 
-# File Management
+# File Management & Desktop
+gvfs-dnssd
+loupe
 nautilus
 nautilus-open-any-terminal
 rsync
-gvfs-dnssd
 unzip
 
 # System Utilities
-plocate
 pacman-contrib
+plocate
 power-profiles-daemon
 
-# Fonts, themes & icons
-ttf-cascadia-mono-nerd
+# Appearance
+bibata-cursor-theme
+gnome-themes-extra
 noto-fonts
 noto-fonts-emoji
 otf-font-awesome
+ttf-cascadia-mono-nerd
 yaru-icon-theme
-bibata-cursor-theme
-gnome-themes-extra
 
 # Applications
 localsend-bin
@@ -101,24 +109,15 @@ mpv
 
 # Elephant Suite
 elephant
-elephant-desktopapplications
-elephant-providerlist
-elephant-clipboard
-elephant-menus
 elephant-calc
+elephant-clipboard
+elephant-desktopapplications
 elephant-files
-elephant-todo
+elephant-menus
+elephant-providerlist
 elephant-symbols
-
-# Image & Video Processing
-imagemagick
-ffmpeg
-handbrake-cli
-yt-dlp
+elephant-todo
 
 # Desktop Portals
 xdg-desktop-portal-gtk
 xdg-utils
-
-# Utilities
-jq

@@ -1,0 +1,150 @@
+#!/bin/bash
+
+set -e
+
+# Source helper library
+source "$HOME/.local/share/dotfiles/bin/lib/helpers.sh"
+
+check_fingerprint_hardware() {
+  if ! lsusb | grep -Eiq 'fingerprint|synaptics|goodix|elan|validity|FPC'; then
+    log_error "No fingerprint sensor detected"
+    return 1
+  fi
+  return 0
+}
+
+setup_sudo_pam() {
+  if [ ! -f /etc/pam.d/sudo ]; then
+    log_error "/etc/pam.d/sudo not found, skipping sudo configuration"
+    return 1
+  fi
+
+  local needs_update=false
+
+  # Check if security line exists (CVE-2024-37408 mitigation)
+  if ! grep -q "pam_succeed_if.so.*service in sudo:su:su-l" /etc/pam.d/sudo; then
+    needs_update=true
+  fi
+
+  # Check if fprintd line exists
+  if ! grep -q "pam_fprintd.so" /etc/pam.d/sudo; then
+    needs_update=true
+  fi
+
+  if [ "$needs_update" = true ]; then
+    log_info "Configuring sudo for fingerprint authentication..."
+
+    # Add security line first (if not present)
+    if ! grep -q "pam_succeed_if.so.*service in sudo:su:su-l" /etc/pam.d/sudo; then
+      sudo sed -i '/auth.*include.*system-auth/i auth       [success=1 default=ignore]  pam_succeed_if.so    service in sudo:su:su-l tty in :unknown' /etc/pam.d/sudo
+    fi
+
+    # Add fprintd line (if not present)
+    if ! grep -q "pam_fprintd.so" /etc/pam.d/sudo; then
+      sudo sed -i '/auth.*include.*system-auth/i auth       sufficient                  pam_fprintd.so' /etc/pam.d/sudo
+    fi
+
+    log_success "sudo configured"
+  fi
+}
+
+setup_polkit_pam() {
+  if [ -f /etc/pam.d/polkit-1 ]; then
+    # File exists, check if fprintd is already configured
+    if ! grep -q "pam_fprintd.so" /etc/pam.d/polkit-1; then
+      log_info "Configuring polkit-1 for fingerprint authentication..."
+      sudo sed -i '/auth.*include.*system-auth/i auth       sufficient   pam_fprintd.so' /etc/pam.d/polkit-1
+      log_success "polkit-1 configured"
+    fi
+  else
+    # Create new polkit-1 file
+    log_info "Creating polkit-1 configuration with fingerprint authentication..."
+    sudo tee /etc/pam.d/polkit-1 >/dev/null <<'EOF'
+#%PAM-1.0
+
+auth       sufficient   pam_fprintd.so
+auth       include      system-auth
+account    include      system-auth
+password   include      system-auth
+session    include      system-auth
+EOF
+    log_success "polkit-1 created and configured"
+  fi
+}
+
+remove_sudo_pam() {
+  if [ -f /etc/pam.d/sudo ] && grep -q "pam_fprintd.so\|pam_succeed_if.so.*service in sudo:su:su-l" /etc/pam.d/sudo; then
+    log_info "Removing fingerprint authentication from sudo..."
+    sudo sed -i '/pam_fprintd\.so/d' /etc/pam.d/sudo
+    sudo sed -i '/pam_succeed_if\.so.*service in sudo:su:su-l/d' /etc/pam.d/sudo
+    log_success "Removed from sudo"
+  fi
+}
+
+remove_polkit_pam() {
+  if [ -f /etc/pam.d/polkit-1 ] && grep -q "pam_fprintd.so" /etc/pam.d/polkit-1; then
+    log_info "Removing fingerprint authentication from polkit-1..."
+    sudo sed -i '/pam_fprintd\.so/d' /etc/pam.d/polkit-1
+    log_success "Removed from polkit-1"
+  fi
+}
+
+if [[ "$1" == "--remove" ]]; then
+  log_step "Removing fingerprint authentication"
+
+  # Remove PAM configurations
+  remove_sudo_pam
+  remove_polkit_pam
+
+  # Uninstall packages
+  if pacman -Qq fprintd &>/dev/null; then
+    log_info "Removing fingerprint packages..."
+    sudo pacman -Rns --noconfirm fprintd >/dev/null 2>&1
+    log_success "Packages removed"
+  fi
+
+  log_success "Fingerprint authentication removed completely"
+else
+  log_step "Setting up fingerprint authentication"
+
+  # Install required packages silently if missing
+  if ! pacman -Qq fprintd &>/dev/null || ! pacman -Qq usbutils &>/dev/null; then
+    sudo pacman -S --noconfirm --needed fprintd usbutils >/dev/null 2>&1
+  fi
+
+  # Check hardware
+  if ! check_fingerprint_hardware; then
+    exit 1
+  fi
+
+  log_success "Fingerprint sensor detected"
+
+  # Configure PAM
+  setup_sudo_pam
+  setup_polkit_pam
+
+  # Enroll fingerprint
+  echo
+  log_step "Enrolling fingerprint"
+  echo
+
+  if sudo fprintd-enroll "$USER"; then
+    echo
+    log_success "Fingerprint enrolled successfully"
+    echo
+
+    # Verify
+    if fprintd-verify; then
+      echo
+      log_success "Verification successful"
+      log_info "You can now use fingerprint for sudo, polkit, and lock screen"
+    else
+      echo
+      log_error "Verification failed - try enrolling again"
+    fi
+  else
+    echo
+    log_error "Enrollment failed"
+    exit 1
+  fi
+fi
