@@ -1,5 +1,4 @@
 Name = "setup"
-Name = "setup"
 NamePretty = "Setup"
 FixedOrder = true
 HideFromProviderlist = true
@@ -8,6 +7,13 @@ Parent = "menu"
 
 function GetEntries()
 	return {
+		{
+			Text = "Fingerprint",
+			Icon = "",
+			Actions = {
+				["fingerprint"] = "ghostty --class=local.floating -e fingerprint-setup",
+			},
+		},
 		{
 			Text = "Postgres",
 			Icon = "",

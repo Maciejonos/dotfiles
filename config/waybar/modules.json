@@ -1,5 +1,4 @@
 {
-  // Workspaces
   "hyprland/workspaces": {
     "on-scroll-up": "hyprctl dispatch workspace r-1",
     "on-scroll-down": "hyprctl dispatch workspace r+1",
@@ -16,7 +15,6 @@
       "*": 5
     }
   },
-  // Updates Count
   "custom/updates": {
     "format": " {}",
     "escape": true,
@@ -27,7 +25,6 @@
     "hide-empty-text": true,
     "on-click": "ghostty --class=local.floating -e update-perform"
   },
-  // Hypridle
   "custom/hypridle": {
     "format": "",
     "return-type": "json",
@@ -37,7 +34,6 @@
     "exec": "hypridle-toggle status",
     "on-click": "hypridle-toggle toggle"
   },
-  // Music
   "custom/music": {
     "format": "  {}",
     "escape": true,
@@ -47,25 +43,16 @@
     "on-click": "playerctl play-pause",
     "max-length": 50
   },
-  // Exit
-  "custom/exit": {
-    "format": "",
-    "tooltip-format": "Exit menu",
-    "on-click": "walker --theme menus -m menus:system --width 150 --minheight 1 --maxheight 600"
-  },
-  // Clock
   "clock": {
     "format": "{:%A %H:%M}",
     "format-alt": "{:%d %B %Y}",
     "tooltip": false
   },
-  // CPU
   "cpu": {
     "interval": 5,
     "format": "",
     "on-click": "ghostty -e btop"
   },
-  // Pulseaudio
   "pulseaudio": {
     "scroll-step": 1,
     "format": "{icon}",
@@ -81,15 +68,25 @@
       ]
     }
   },
-  // Bluetooth
-  "bluetooth": {
-    "format": "",
-    "format-disabled": "󰂲",
-    "format-connected": "",
-    "tooltip-format": "Devices connected: {num_connections}",
-    "on-click": "ghostty --class=local.bluetui -e bluetui"
+  "network": {
+    "format-icons": [
+      "󰤯",
+      "󰤟",
+      "󰤢",
+      "󰤥",
+      "󰤨"
+    ],
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "󰀂",
+    "format-disconnected": "󰤮",
+    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 3,
+    "spacing": 1,
+    "on-click": "ghostty --class=local.floating -e impala"
   },
-  // Battery
   "battery": {
     "format": "{capacity}% {icon}",
     "format-discharging": "{icon}",
@@ -124,41 +121,34 @@
     "format-full": "󰂅",
     "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
     "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
-    "on-click": "walker -t dotfiles -m menus:power-profiles",
     "interval": 5,
+    "on-click": "walker -t menus -m menus:power-profiles -N -n",
     "states": {
       "warning": 20,
       "critical": 10
     }
   },
-  // Network
-  "network": {
-    "format-icons": [
-      "󰤯",
-      "󰤟",
-      "󰤢",
-      "󰤥",
-      "󰤨"
-    ],
-    "format": "{icon}",
-    "format-wifi": "{icon}",
-    "format-ethernet": "󰀂",
-    "format-disconnected": "󰤮",
-    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
-    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
-    "tooltip-format-disconnected": "Disconnected",
-    "interval": 3,
-    "spacing": 1,
-    "on-click": "ghostty --class=local.impala -e impala"
+  "bluetooth": {
+    "format": "",
+    "format-disabled": "󰂲",
+    "format-connected": "",
+    "tooltip-format": "Devices connected: {num_connections}",
+    "on-click": "ghostty --class=local.bluetui -e bluetui"
   },
-  // Quicklinks
   "custom/brightness": {
     "format": "",
-    "on-click": "walker --theme menus -m menus:brightness --width 50 --maxwidth 50"
+    "on-click": "walker -t menus -m menus:brightness --maxheight 350 --minwidth 50 -N"
   },
   "custom/filemanager": {
     "format": "",
     "on-click": "nautilus",
     "tooltip-format": "Open Filemanager"
+  },
+  "custom/screenrecord": {
+    "exec": "screenrecord-status",
+    "return-type": "json",
+    "signal": 8,
+    "interval": 1,
+    "on-click": "screenrecord output"
   }
 }

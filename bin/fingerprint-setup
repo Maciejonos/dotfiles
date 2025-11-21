@@ -1,0 +1,280 @@
+#!/bin/bash
+
+set -e
+
+# Source helper library
+source "$HOME/.local/bin/lib/helpers.sh"
+
+# --- Hardware Checks ---
+
+check_fingerprint_hardware() {
+  if ! lsusb | grep -Eiq 'fingerprint|synaptics|goodix|elan|validity|FPC'; then
+    log_error "No fingerprint sensor detected via lsusb."
+    return 1
+  fi
+  return 0
+}
+
+ensure_packages() {
+    if ! pacman -Qq fprintd &>/dev/null || ! pacman -Qq usbutils &>/dev/null; then
+        log_info "Installing required packages (fprintd, usbutils)..."
+        if sudo pacman -S --noconfirm --needed fprintd usbutils >/dev/null 2>&1; then
+            log_success "Packages installed"
+        else
+            log_error "Failed to install packages"
+            return 1
+        fi
+    fi
+}
+
+# --- PAM Configuration Functions (Preserved) ---
+
+setup_sudo_pam() {
+  if [ ! -f /etc/pam.d/sudo ]; then
+    log_error "/etc/pam.d/sudo not found, skipping"
+    return 1
+  fi
+
+  local needs_update=false
+
+  # Check if security line exists (CVE-2024-37408 mitigation)
+  if ! grep -q "pam_succeed_if.so.*service in sudo:su:su-l" /etc/pam.d/sudo; then
+    needs_update=true
+  fi
+  # Check if fprintd line exists
+  if ! grep -q "pam_fprintd.so" /etc/pam.d/sudo; then
+    needs_update=true
+  fi
+
+  if [ "$needs_update" = true ]; then
+    log_detail "Configuring sudo..."
+    if ! grep -q "pam_succeed_if.so.*service in sudo:su:su-l" /etc/pam.d/sudo; then
+      sudo sed -i '/auth.*include.*system-auth/i auth       [success=1 default=ignore]  pam_succeed_if.so    service in sudo:su:su-l tty in :unknown' /etc/pam.d/sudo
+    fi
+    if ! grep -q "pam_fprintd.so" /etc/pam.d/sudo; then
+      sudo sed -i '/auth.*include.*system-auth/i auth       sufficient                  pam_fprintd.so' /etc/pam.d/sudo
+    fi
+    log_success "sudo configured"
+  fi
+}
+
+setup_polkit_pam() {
+  if [ -f /etc/pam.d/polkit-1 ]; then
+    if ! grep -q "pam_fprintd.so" /etc/pam.d/polkit-1; then
+      log_detail "Configuring polkit-1..."
+      sudo sed -i '/auth.*include.*system-auth/i auth       sufficient   pam_fprintd.so' /etc/pam.d/polkit-1
+      log_success "polkit-1 configured"
+    fi
+  else
+    log_detail "Creating polkit-1 configuration..."
+    sudo tee /etc/pam.d/polkit-1 >/dev/null <<'EOF'
+#%PAM-1.0
+auth       sufficient   pam_fprintd.so
+auth       include      system-auth
+account    include      system-auth
+password   include      system-auth
+session    include      system-auth
+EOF
+    log_success "polkit-1 created"
+  fi
+}
+
+configure_all_pam() {
+    log_step "Verifying PAM Configuration"
+    setup_sudo_pam
+    setup_polkit_pam
+}
+
+# --- Cleanup Functions ---
+
+remove_sudo_pam() {
+  if [ -f /etc/pam.d/sudo ] && grep -q "pam_fprintd.so\|pam_succeed_if.so.*service in sudo:su:su-l" /etc/pam.d/sudo; then
+    log_detail "Cleaning sudo..."
+    sudo sed -i '/pam_fprintd\.so/d' /etc/pam.d/sudo
+    sudo sed -i '/pam_succeed_if\.so.*service in sudo:su:su-l/d' /etc/pam.d/sudo
+  fi
+}
+
+remove_polkit_pam() {
+  if [ -f /etc/pam.d/polkit-1 ] && grep -q "pam_fprintd.so" /etc/pam.d/polkit-1; then
+    log_detail "Cleaning polkit-1..."
+    sudo sed -i '/pam_fprintd\.so/d' /etc/pam.d/polkit-1
+  fi
+}
+
+# --- Menu Actions ---
+
+action_enroll_finger() {
+    local finger="$1" # Optional: specific finger name
+    
+    ensure_packages
+    configure_all_pam
+    
+    echo
+    if [ -z "$finger" ]; then
+        log_step "Enrolling default finger (Right Index)"
+        # fprintd-enroll defaults to right index if no arg provided
+        fprintd-enroll "$USER"
+    else
+        log_step "Enrolling: $finger"
+        fprintd-enroll -f "$finger" "$USER"
+    fi
+
+    # Check result
+    if [ $? -eq 0 ]; then
+        echo
+        log_success "Enrollment successful"
+        echo
+        log_info "Verifying..."
+        if fprintd-verify; then
+            log_success "Verification passed!"
+        else
+            log_error "Verification failed."
+        fi
+    else
+        log_error "Enrollment failed or cancelled."
+    fi
+}
+
+action_enroll_specific() {
+    log_step "Select finger to enroll:"
+    local fingers=(
+        "right-thumb" "right-index-finger" "right-middle-finger" "right-ring-finger" "right-little-finger"
+        "left-thumb" "left-index-finger" "left-middle-finger" "left-ring-finger" "left-little-finger"
+    )
+    
+    local choice
+    choice=$(gum choose "${fingers[@]}" --height 12)
+    
+    if [ -n "$choice" ]; then
+        action_enroll_finger "$choice"
+    fi
+}
+
+action_list() {
+    log_step "Enrolled Fingerprints"
+    echo
+    # Run list, verify user has prints, output cleanly
+    if fprintd-list "$USER" | grep -q "No fingerprints"; then
+        log_info "No fingerprints enrolled."
+    else
+        fprintd-list "$USER" | grep ": " | while read -r line; do
+            # Clean up the output visually
+            clean_line=$(echo "$line" | awk -F': ' '{print $2}')
+            log_detail "$clean_line"
+        done
+    fi
+    echo
+    ask_yes_no "Return to menu?" || exit 0
+}
+
+action_remove_specific() {
+    log_step "Select fingerprint to remove"
+    
+    # Get list of currently enrolled fingers
+    local enrolled_fingers
+    enrolled_fingers=$(fprintd-list "$USER" | grep ": " | awk -F': ' '{print $2}')
+    
+    if [ -z "$enrolled_fingers" ]; then
+        log_error "No fingerprints found to remove."
+        sleep 1
+        return
+    fi
+
+    local choice
+    choice=$(echo "$enrolled_fingers" | gum choose --header "Select finger to delete")
+
+    if [ -n "$choice" ]; then
+        if ask_yes_no "Remove $choice?"; then
+            if fprintd-delete "$USER" -f "$choice"; then
+                log_success "Removed $choice"
+            else
+                log_error "Failed to remove $choice"
+            fi
+        fi
+    fi
+}
+
+action_remove_all() {
+    log_step "Full Removal"
+    log_error "This will remove ALL fingerprints and disable PAM configuration."
+    
+    if ask_yes_no "Are you sure you want to proceed?"; then
+        # 1. Remove all fingerprints
+        log_info "Deleting all fingerprints..."
+        fprintd-delete "$USER"
+        
+        # 2. Clean PAM
+        log_info "Reverting PAM configuration..."
+        remove_sudo_pam
+        remove_polkit_pam
+        
+        # 3. Uninstall packages
+        if ask_yes_no "Uninstall fprintd package?"; then
+            if pacman -Qq fprintd &>/dev/null; then
+                 sudo pacman -Rns --noconfirm fprintd >/dev/null 2>&1
+                 log_success "Packages removed"
+            fi
+        fi
+        
+        log_success "Fingerprint authentication removed completely."
+        exit 0
+    fi
+}
+
+# --- Main Loop ---
+
+# Initial Check
+if ! check_fingerprint_hardware; then
+    exit 1
+fi
+
+while true; do
+    clear
+    log_header "Fingerprint Management"
+    
+    # Define Options
+    OPT_ENROLL_DEFAULT="1. Enroll Default (Right Index)"
+    OPT_ENROLL_SPECIFIC="2. Enroll Different Finger"
+    OPT_LIST="3. List Fingerprints"
+    OPT_REMOVE_SPECIFIC="4. Remove Specific Fingerprint"
+    OPT_REMOVE_ALL="5. Remove All & Uninstall"
+    OPT_EXIT="Exit"
+
+    CHOICE=$(gum choose \
+        "$OPT_ENROLL_DEFAULT" \
+        "$OPT_ENROLL_SPECIFIC" \
+        "$OPT_LIST" \
+        "$OPT_REMOVE_SPECIFIC" \
+        "$OPT_REMOVE_ALL" \
+        "$OPT_EXIT" \
+        --header "Select an action:" \
+        --cursor="› " \
+        --height=10)
+
+    case "$CHOICE" in
+        "$OPT_ENROLL_DEFAULT")
+            action_enroll_finger ""
+            show_done
+            ;;
+        "$OPT_ENROLL_SPECIFIC")
+            action_enroll_specific
+            show_done
+            ;;
+        "$OPT_LIST")
+            action_list
+            ;;
+        "$OPT_REMOVE_SPECIFIC")
+            action_remove_specific
+            ;;
+        "$OPT_REMOVE_ALL")
+            action_remove_all
+            ;;
+        "$OPT_EXIT")
+            exit 0
+            ;;
+        *)
+            exit 0
+            ;;
+    esac
+done
