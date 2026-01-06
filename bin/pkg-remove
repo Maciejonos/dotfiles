@@ -3,7 +3,7 @@ source "$HOME/.local/share/dotfiles/bin/lib/helpers.sh"
 
 fzf_args=(
   --multi
-  --preview 'paru -Qi {1}'
+  --preview 'yay -Qi {1}'
   --preview-label='alt-p: toggle description, alt-j/k: scroll, tab: multi-select, F11: maximize'
   --preview-label-pos='bottom'
   --preview-window 'down:65%:wrap'
@@ -13,7 +13,7 @@ fzf_args=(
   --color 'pointer:red,marker:red'
 )
 
-pkg_names=$(paru -Qqe | fzf "${fzf_args[@]}")
+pkg_names=$(yay -Qqe | fzf "${fzf_args[@]}")
 
 if [[ -n "$pkg_names" ]]; then
   echo "$pkg_names" | tr '\n' ' ' | xargs sudo pacman -Rns --noconfirm

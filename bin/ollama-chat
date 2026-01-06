@@ -64,7 +64,7 @@ handle_install() {
   log_step "Installing $package... (might take a while)"
   sudo -v
 
-  if spinner "Installing $package..." paru --noconfirm --needed -S "$package" 2>&1; then
+  if spinner "Installing $package..." yay --noconfirm --needed -S "$package" 2>&1; then
     log_success "$package installed"
   else
     log_error "Failed to install $package"

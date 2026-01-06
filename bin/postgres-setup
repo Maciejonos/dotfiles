@@ -50,14 +50,14 @@ fi
 
 # Install Beekeeper Studio
 log_step "Installing Beekeeper Studio..."
-if ! command -v paru &>/dev/null; then
-  log_info "paru not installed, skipping Beekeeper Studio"
+if ! command -v yay &>/dev/null; then
+  log_info "yay not installed, skipping Beekeeper Studio"
 else
-  if paru -S --noconfirm beekeeper-studio-bin 2>/dev/null; then
+  if yay -S --noconfirm beekeeper-studio-bin 2>/dev/null; then
     log_success "Beekeeper Studio installed"
   else
     log_error "Could not install Beekeeper Studio"
-    log_detail "Install manually: paru -S beekeeper-studio-bin"
+    log_detail "Install manually: yay -S beekeeper-studio-bin"
   fi
 fi
 

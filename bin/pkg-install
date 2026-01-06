@@ -3,15 +3,15 @@ source "$HOME/.local/share/dotfiles/bin/lib/helpers.sh"
 
 fzf_args=(
   --multi
-  --preview 'paru -Si {2}'
+  --preview 'yay -Si {2}'
   --preview-label='alt-p: toggle desc, alt-b/B: toggle PKGBUILD, alt-j/k: scroll, tab: multi-select'
   --preview-label-pos='bottom'
   --preview-window 'down:55%:wrap'
   --bind 'alt-p:toggle-preview'
   --bind 'alt-d:preview-half-page-down,alt-u:preview-half-page-up'
   --bind 'alt-k:preview-up,alt-j:preview-down'
-  --bind 'alt-b:change-preview:paru -Gpa {2} | tail -n +5'
-  --bind 'alt-B:change-preview:paru -Siia {2}'
+  --bind 'alt-b:change-preview:yay -Gpa {2} | tail -n +5'
+  --bind 'alt-B:change-preview:yay -Siia {2}'
   --color 'pointer:green,marker:green'
 )
 
@@ -24,10 +24,10 @@ format_packages() {
   }'
 }
 
-pkg_names=$(paru -Sl | format_packages | fzf "${fzf_args[@]}" --ansi | awk '{print $2}')
+pkg_names=$(yay -Sl | format_packages | fzf "${fzf_args[@]}" --ansi | awk '{print $2}')
 
 if [[ -n "$pkg_names" ]]; then
-  echo "$pkg_names" | tr '\n' ' ' | xargs paru -S --noconfirm
+  echo "$pkg_names" | tr '\n' ' ' | xargs yay -S --noconfirm
   sudo updatedb
   show_done
 fi

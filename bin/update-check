@@ -20,7 +20,7 @@ threshhold_yellow=25
 threshhold_red=100
 
 if [[ $(_checkCommandExists "pacman") == 0 ]]; then
-    aur_helper="paru"
+    aur_helper="yay"
     check_lock_files() {
         local pacman_lock="/var/lib/pacman/db.lck"
         local checkup_lock="${TMPDIR:-/tmp}/checkup-db-${UID}/db.lck"
@@ -33,10 +33,10 @@ if [[ $(_checkCommandExists "pacman") == 0 ]]; then
     official_updates=$(checkupdates 2>/dev/null | wc -l)
 
     aur_updates=0
-    if command -v paru >/dev/null 2>&1; then
-        aur_updates=$(paru -Qua 2>/dev/null | wc -l)
-    elif command -v yay >/dev/null 2>&1; then
+    if command -v yay >/dev/null 2>&1; then
         aur_updates=$(yay -Qua 2>/dev/null | wc -l)
+    elif command -v paru >/dev/null 2>&1; then
+        aur_updates=$(paru -Qua 2>/dev/null | wc -l)
     fi
 
     updates=$((official_updates + aur_updates))

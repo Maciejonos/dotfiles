@@ -36,15 +36,15 @@ else
 fi
 
 log_step "Installing lazydocker..."
-if ! command -v paru &>/dev/null; then
-  log_info "paru not installed, skipping lazydocker"
-  log_detail "Install manually: paru -S lazydocker"
+if ! command -v yay &>/dev/null; then
+  log_info "yay not installed, skipping lazydocker"
+  log_detail "Install manually: yay -S lazydocker"
 else
-  if paru -S --noconfirm lazydocker 2>/dev/null; then
+  if yay -S --noconfirm lazydocker 2>/dev/null; then
     log_success "lazydocker installed"
   else
     log_error "Could not install lazydocker"
-    log_detail "Install manually: paru -S lazydocker"
+    log_detail "Install manually: yay -S lazydocker"
   fi
 fi
 
