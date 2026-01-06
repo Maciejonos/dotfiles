@@ -28,7 +28,7 @@ ensure_gum
 # Authenticate sudo early to cache credentials
 sudo -v
 
-_installParu() {
+_installYay() {
   if ! is_installed "base-devel"; then
     log_info "Installing base-devel..."
     sudo pacman --noconfirm -S base-devel
@@ -38,15 +38,15 @@ _installParu() {
     sudo pacman --noconfirm -S git
   fi
 
-  log_info "Cloning paru from AUR..."
-  rm -rf /tmp/paru
-  git clone https://aur.archlinux.org/paru.git /tmp/paru
-  cd /tmp/paru
-  log_info "Building and installing paru (this may take a moment)..."
+  log_info "Cloning yay from AUR..."
+  rm -rf /tmp/yay
+  git clone https://aur.archlinux.org/yay.git /tmp/yay
+  cd /tmp/yay
+  log_info "Building and installing yay (this may take a moment)..."
   makepkg -si --noconfirm
   cd ~
-  rm -rf /tmp/paru
-  log_success "Paru installed successfully"
+  rm -rf /tmp/yay
+  log_success "Yay installed successfully"
 }
 
 _installPackages() {
@@ -65,7 +65,7 @@ _installPackages() {
     fi
 
     # Try to install, handle conflicts gracefully
-    if spinner "Installing $pkg... [$current/$total]" paru --noconfirm --needed -S "${pkg}" 2>&1; then
+    if spinner "Installing $pkg... [$current/$total]" yay --noconfirm --needed -S "${pkg}" 2>&1; then
       log_success "$pkg"
     else
       log_error "Failed to install: $pkg"
@@ -79,7 +79,7 @@ _installPackages() {
     for pkg in "${failed_packages[@]}"; do
       log_detail "$pkg"
     done
-    log_info "You can try installing them manually with: paru -S <package_name>"
+    log_info "You can try installing them manually with: yay -S <package_name>"
   fi
 }
 
@@ -90,10 +90,10 @@ START_TIME=$(date +%s)
 TOTAL_STEPS=8
 CURRENT_STEP=0
 
-if ! is_installed "paru"; then
+if ! is_installed "yay"; then
   CURRENT_STEP=$((CURRENT_STEP + 1))
-  log_step "[$CURRENT_STEP/$TOTAL_STEPS] Installing paru AUR helper"
-  _installParu
+  log_step "[$CURRENT_STEP/$TOTAL_STEPS] Installing yay AUR helper"
+  _installYay
 fi
 
 CURRENT_STEP=$((CURRENT_STEP + 1))
